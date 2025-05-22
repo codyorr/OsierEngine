@@ -1,5 +1,5 @@
 package org.osier.ui;
 
-public class GUIObject {
+public class GUIObject extends BaseGUIObject{
 
 }
