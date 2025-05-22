@@ -3,6 +3,7 @@ package org.osier.ui;
 public class GUIObject extends BaseGUIObject {
 	
 	protected int displayOrder;
+	
 	public GUIObject() {
 		
 	}
