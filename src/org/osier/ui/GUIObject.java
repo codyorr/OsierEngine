@@ -1,9 +1,8 @@
-package org.osier.gui;
+package org.osier.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 
 import org.osier.math.ScaledDimension;
 import org.osier.math.Vector2;
