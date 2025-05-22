@@ -1,6 +1,7 @@
 package org.osier.ui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class GUIChildren {
@@ -26,4 +27,20 @@ public class GUIChildren {
 		
 		return null;
 	}
+	
+	protected void add(GUIObject obj) {
+		list.add(obj);
+		sortByDisplayOrder();
+	}
+	
+	protected void remove(GUIObject obj) {
+		list.remove(obj);
+		sortByDisplayOrder();
+	}
+	
+	private void sortByDisplayOrder() {
+		list.sort(Comparator.comparingInt(GUIObject::getDisplayOrder));
+	}
+	
+	
 }
