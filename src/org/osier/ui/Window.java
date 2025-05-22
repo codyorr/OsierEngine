@@ -2,6 +2,7 @@ package org.osier.ui;
 
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Insets;
 
 public class Window extends BaseGUIObject {
 	
@@ -23,11 +24,15 @@ public class Window extends BaseGUIObject {
 		frame.setBackground(Color.black);
 		frame.setUndecorated(!decorated);
 		if(decorated) {
-			frame.setSize(width, height);
+			frame.setSize(width+getInsets().left, height+getInsets().top);
 		}else {
 			frame.setSize(width, height);
 		}
 		frame.setLocationRelativeTo(null);
+	}
+	
+	public Insets getInsets() {
+		return frame.getInsets();
 	}
 	
 	
