@@ -1,8 +1,11 @@
 package org.osier.ui;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import org.osier.gui.GUIObject;
 
 public class GUIChildren {
 	
@@ -40,6 +43,24 @@ public class GUIChildren {
 	
 	private void sortByDisplayOrder() {
 		list.sort(Comparator.comparingInt(GUIObject::getDisplayOrder));
+	}
+	
+	protected void updateSizes() {
+		for(GUIObject child : list) {
+			child.updateSize();
+		}
+	}
+	
+	protected void updatePositions() {
+		for(GUIObject child : list) {
+			child.updatePosition();
+		}
+	}
+	
+	protected void render(Graphics2D g) {
+		for(GUIObject child : list) {
+			child.render(g);
+		}
 	}
 	
 	
