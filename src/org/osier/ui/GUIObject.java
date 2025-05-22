@@ -175,6 +175,9 @@ public class GUIObject extends BaseGUIObject {
 	}
 	
 	public void setBorderSize(int borderSize) {
+		if(borderSize < 0) {
+			borderSize = 0;
+		}
 		this.borderSize = borderSize;
 		borderStroke = new BasicStroke(borderSize);
 		borderX = x - (borderSize/2);
