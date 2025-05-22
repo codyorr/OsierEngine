@@ -29,8 +29,6 @@ public class Test extends OsierEngine{
 		label.setBackgroundColor(Color.green);
 		label.setBorderSize(0);
 		label.setParent(frame);
-		
-		
 	}
 
 	@Override
