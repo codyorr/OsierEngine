@@ -25,7 +25,6 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 		name = "ImageButton";
 		hoverBackgroundColor = Color.gray;
 		hoverBorderColor = Color.DARK_GRAY;
-		
 	}
 	
 	@Override
@@ -34,14 +33,22 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 		
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
         
-		g.setColor(hovered ? hoverBackgroundColor : backgroundColor);
+        g.setColor(backgroundColor);
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
-		}else {
+			g.setColor(borderColor);
+			g.setStroke(borderStroke);
+			g.drawRect(borderX, borderY, borderWidth, borderHeight);
+
+		} else {
 			g.fillRoundRect(x, y, width, height, cornerRadius, cornerRadius);
+			g.setColor(borderColor);
+			g.setStroke(borderStroke);
+			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
+
 		}
 		
-		if(hovered) {
+		/*if(hovered) {
 			if (hoverImage != null) {
 			    if (scaleType == STRETCH) {
 			        g.drawImage(hoverImage, x, y, width, height, null);
@@ -61,16 +68,16 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 			        g.drawImage(tiledImage, x, y, width, height,null);
 			    }
 			}
-		}
+		}*/
 		
-
-		 
-		g.setColor(hovered ? hoverBorderColor : borderColor);
-		g.setStroke(borderStroke);
-		if(cornerRadius<1) {
-			g.drawRect(borderX, borderY, borderWidth, borderHeight);
-		}else {
-			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
+		if (selectedImage != null) {
+		    if (scaleType == STRETCH) {
+		        g.drawImage(selectedImage, x, y, width, height, null);
+		    }else if (scaleType == FIT) {                    
+		        g.drawImage(selectedImage, imageX, imageY, imageWidth,imageHeight, null);
+		    } else if (scaleType == TILE) {
+		        g.drawImage(tiledImage, x, y, width, height,null);
+		    }
 		}
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
@@ -122,10 +129,21 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 		g.dispose();
 	}
 	
+	@Override
+	public void setImage(BufferedImage image) {
+		if(this.image == null && !hovered) {
+			selectedImage = image;
+		}
+		this.image = image;
+	}
+	
 	public BufferedImage getHoverImage() {
 		return hoverImage;
 	}
 	public void setHoverImage(BufferedImage image) {
+		if(this.hoverImage == null && hovered) {
+			selectedImage = image;
+		}
 		hoverImage = image;
 	}
 	public void loadHoverImageFromFile(String path) {

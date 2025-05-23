@@ -49,11 +49,19 @@ public class ImageLabel extends GUIObject {
 		
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
 
-		g.setColor(backgroundColor);
+        g.setColor(backgroundColor);
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
+			g.setColor(borderColor);
+			g.setStroke(borderStroke);
+			g.drawRect(borderX, borderY, borderWidth, borderHeight);
+
 		}else {
 			g.fillRoundRect(x, y, width, height, cornerRadius, cornerRadius);
+			g.setColor(borderColor);
+			g.setStroke(borderStroke);
+			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
+
 		}
 		
 		if (image != null) {
@@ -64,14 +72,6 @@ public class ImageLabel extends GUIObject {
 		    } else if (scaleType == TILE) {
 		        g.drawImage(tiledImage, x, y, width, height,null);
 		    }
-		}
-		 
-		g.setColor(borderColor);
-		g.setStroke(borderStroke);
-		if(cornerRadius<1) {
-			g.drawRect(borderX, borderY, borderWidth, borderHeight);
-		}else {
-			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
 		}
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);

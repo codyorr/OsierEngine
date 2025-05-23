@@ -16,7 +16,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.osier.ui.GUIObject;
 import org.osier.ui.Window;
 
 public class OsierEngine implements CoreListener {
@@ -44,7 +43,6 @@ public class OsierEngine implements CoreListener {
 	private boolean mouseMoving;
 	private boolean running;
 	private final long SECOND_NANOS = 1000000000L;
-	private GUIObject targetGUIObject;
 
 	
 	public OsierEngine(String title, int width, int height, boolean decorated) {
@@ -106,7 +104,7 @@ public class OsierEngine implements CoreListener {
          			if(shouldRender) {
          				update();
          				try {
-	         				g = (Graphics2D) bs.getDrawGraphics();
+         					g = (Graphics2D) bs.getDrawGraphics();
 	         				g.clearRect(0, 0, window.getWidth(), window.getHeight());
 	         			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	         				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -137,6 +135,7 @@ public class OsierEngine implements CoreListener {
 		window.setVisible(true);
 		window.createBufferStrategy(2);
         bs = window.getBufferStrategy();
+		g = (Graphics2D) bs.getDrawGraphics();
 
 		
 		//INPUT EVENTS
@@ -171,22 +170,20 @@ public class OsierEngine implements CoreListener {
 		window.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent e) {
 				if(mouseMoving) return;
+				mouseMoving = true;
 				
 				inputQueue.add(() -> {
-					mouseMoving = true;
-					OsierEngine.this.mouseMoved(e, true);
-					
 					mouseMoving = false;
+					OsierEngine.this.mouseMoved(e, true);
 				});
 			}
 
 			public void mouseMoved(MouseEvent e) {
 				if(mouseMoving) return;
-
+				mouseMoving=true;
 				inputQueue.add(() -> {
-					mouseMoving = true;
-					OsierEngine.this.mouseMoved(e, false);
 					mouseMoving = false;
+					OsierEngine.this.mouseMoved(e, false);
 				});
 			}
 			
@@ -211,12 +208,11 @@ public class OsierEngine implements CoreListener {
 		window.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent componentEvent) {
 		    	if(windowResizing) return;
-		    	inputQueue.add(new Runnable() {
-		    		public void run() {
-		    			windowResizing=true;
-		    		    windowResized(window.getWidth(),window.getHeight());
-		    		    windowResizing=false;
-		    		}
+    			windowResizing=true;
+
+		    	inputQueue.add(() -> {
+		    		windowResizing=false;
+	    		    windowResized(window.getWidth(),window.getHeight());
 		    	});
 		    }
 		});
