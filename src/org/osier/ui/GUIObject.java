@@ -147,6 +147,14 @@ public class GUIObject extends BaseGUIObject {
 		return new Vector2(x,y);
 	}
 	
+	public void setCornerRadius(int cornerRadius) {
+		this.cornerRadius = cornerRadius;
+	}
+	
+	public int getCornerRadius() {
+		return cornerRadius;
+	}
+	
 	public int getDisplayOrder() {
 		return displayOrder;
 	}

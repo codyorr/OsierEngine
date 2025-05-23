@@ -13,9 +13,6 @@ public class GUIChildren {
 		list = new ArrayList<GUIObject>();
 	}
 	
-	public GUIChildren(GUIChildren children) {
-		this.list = children.list;
-	}
 	
 	@SuppressWarnings("unchecked")
 	public <T extends GUIObject> T get(int i) {
@@ -29,7 +26,6 @@ public class GUIChildren {
 				return (T) child;
 			}
 		}
-		
 		return null;
 	}
 	

@@ -23,12 +23,17 @@ public class Test extends OsierEngine{
 		frame.setSize(0, 0.5f, 0, 0.5f);
 		frame.setPosition(0, 0.5f, 0, 0.5f);
 		frame.setOrigin(0.5f, 0.5f);
+		frame.setCornerRadius(8);
 		frame.setParent(window);
 		
 		label = new ImageLabel();
 		label.setBackgroundColor(Color.green);
 		label.setBorderSize(0);
 		label.setParent(frame);
+		
+		var parent = (GUIFrame)label.getParent();
+		
+		System.out.println(parent.getCornerRadius());
 	}
 
 	@Override
