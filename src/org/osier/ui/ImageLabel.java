@@ -20,17 +20,16 @@ public class ImageLabel extends GUIObject {
 	public static final int STRETCH = 2;
 	public static final int TILE = 3;
 	
-	private BufferedImage image,tiledImage;
-	private int scaleType,tileWidth,tileHeight;
-	private double rotationAngle;
+	protected BufferedImage image,tiledImage;
+	protected int scaleType,tileWidth,tileHeight;
 	
 	//FIT
-	private int imageX,imageY,imageWidth,imageHeight;
-	private double imageAspect,canvasAspect;
+	protected int imageX,imageY,imageWidth,imageHeight;
+	protected double imageAspect,canvasAspect;
 	
 	//TILE
-	private int gridWidth,gridHeight;
-	private boolean loaded;
+	protected int gridWidth,gridHeight;
+	protected boolean loaded;
 	
 	public ImageLabel() {
 		super();
@@ -166,7 +165,7 @@ public class ImageLabel extends GUIObject {
 	    try {
 	        BufferedImage loadedImage = ImageIO.read(new File(path));
 
-	        if (image != null) {
+	        if (loadedImage != null) {
 	        	image = loadedImage;
 	            updateImage();
 	            loaded = true;

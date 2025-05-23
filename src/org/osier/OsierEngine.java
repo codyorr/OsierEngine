@@ -17,7 +17,6 @@ import java.awt.image.BufferStrategy;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.osier.ui.Window;
-import org.osier.listeners.CoreListener;
 
 public class OsierEngine implements CoreListener {
 	
