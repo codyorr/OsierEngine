@@ -16,6 +16,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.osier.ui.GUIObject;
 import org.osier.ui.Window;
 
 public class OsierEngine implements CoreListener {
@@ -43,7 +44,7 @@ public class OsierEngine implements CoreListener {
 	private boolean mouseMoving;
 	private boolean running;
 	private final long SECOND_NANOS = 1000000000L;
-
+	private GUIObject targetGUIObject;
 
 	
 	public OsierEngine(String title, int width, int height, boolean decorated) {
@@ -174,6 +175,7 @@ public class OsierEngine implements CoreListener {
 				inputQueue.add(() -> {
 					mouseMoving = true;
 					OsierEngine.this.mouseMoved(e, true);
+					
 					mouseMoving = false;
 				});
 			}

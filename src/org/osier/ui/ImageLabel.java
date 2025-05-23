@@ -42,6 +42,7 @@ public class ImageLabel extends GUIObject {
 		scaleType = STRETCH;
 	}
 	
+	
 	@Override
 	protected void render(Graphics2D g) {
 		if(!visible)return;
@@ -96,7 +97,7 @@ public class ImageLabel extends GUIObject {
 		}
 	}
 	
-	private void updateFittedImage() {
+	protected void updateFittedImage() {
 	    canvasAspect = (double) width / height;
 	    imageAspect = (double) image.getWidth(null) / image.getHeight(null);
 
@@ -115,7 +116,7 @@ public class ImageLabel extends GUIObject {
 	    imageY = y + (height - imageHeight) / 2;
 	}
 	
-	private void updateTiledImage() {
+	protected void updateTiledImage() {
 	    int offsetX = (gridWidth - width % gridWidth) % gridWidth;
 	    int offsetY = (gridHeight - height % gridHeight) % gridHeight;
 	    

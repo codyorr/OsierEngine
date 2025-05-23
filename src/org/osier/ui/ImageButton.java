@@ -2,6 +2,7 @@ package org.osier.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +20,12 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 	private Color hoverBorderColor;
 	private boolean hovered;
 	private BufferedImage hoverImage;
-	
+	private BufferedImage selectedImage;
 	public ImageButton() {
 		name = "ImageButton";
 		hoverBackgroundColor = Color.gray;
 		hoverBorderColor = Color.DARK_GRAY;
+		
 	}
 	
 	@Override
@@ -77,6 +79,49 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 	}
 	
 	
+	@Override
+	protected void updateFittedImage() {
+	    canvasAspect = (double) width / height;
+	    imageAspect = (double) selectedImage.getWidth(null) / selectedImage.getHeight(null);
+
+	    // Determine if the selectedImage is larger than the background
+	    boolean imageLarger = selectedImage.getWidth(null) > width || selectedImage.getHeight(null) > height;
+
+	    if (canvasAspect > imageAspect) {
+	        imageHeight = Math.min(height, imageLarger ? height : (int) (width / imageAspect));
+	        imageWidth = (int) (imageHeight * imageAspect);
+	    } else {
+	        imageWidth = Math.min(width, imageLarger ? width : (int) (height * imageAspect));
+	        imageHeight = (int) (imageWidth / imageAspect);
+	    }
+
+	    imageX = x + (width - imageWidth) / 2;
+	    imageY = y + (height - imageHeight) / 2;
+	}
+	
+	@Override
+	protected void updateTiledImage() {
+	    int offsetX = (gridWidth - width % gridWidth) % gridWidth;
+	    int offsetY = (gridHeight - height % gridHeight) % gridHeight;
+	    
+	    tileWidth = (width + offsetX) / gridWidth;
+	    tileHeight = (height + offsetY) / gridHeight;
+		
+		tiledImage = new BufferedImage(width+offsetX,height+offsetY,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = (Graphics2D) tiledImage.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		g.setColor(new Color(0,0,0,0));
+		g.fillRect(0, 0, width, height);
+		for (int i = 0; i < gridHeight; i++) {
+			for (int j = 0; j < gridWidth; j++) { 
+				g.drawImage(selectedImage, j*tileWidth,i*tileHeight,tileWidth,tileHeight,null);
+			}
+		}
+		g.dispose();
+	}
+	
 	public BufferedImage getHoverImage() {
 		return hoverImage;
 	}
@@ -114,11 +159,13 @@ public class ImageButton extends ImageLabel implements GUIButtonListener {
 	        Logger.log("Failed to load image from URL: " + urlString);
 	    }
 	}
+	
 	public boolean isHovered() {
 		return hovered;
 	}
 	public void setHovered(boolean hovered) {
 		this.hovered = hovered;
+		this.selectedImage = hovered ? hoverImage : image;
 	}
 	public Color getHoverBorderColor() {
 		return hoverBorderColor;

@@ -15,12 +15,15 @@ public class Window extends BaseGUIObject {
 	
 	
 	private Frame frame;
+	private GUIChildren buttons;
+	private GUIObject targetButton;
 	public Window(String title, int width, int height, boolean decorated) {
 		this.name = "Window";
 		this.x = 0;
 		this.y = 0;
 		this.width = width;
 		this.height = height;
+		buttons = new GUIChildren();
 		this.frame = new Frame() {
 			private static final long serialVersionUID = 1L;
 			
@@ -58,6 +61,28 @@ public class Window extends BaseGUIObject {
 		frame.setLocationRelativeTo(null);
 	}
 	
+	
+	public void handleButtonClick() {
+		
+	}
+	public void handleButtonPress() {
+		
+	}
+	public void handleButtonRelease() {
+		
+	}
+	public void handleButtonEnter() {
+		
+	}
+	public void handleButtonExited() {
+		
+	}
+	public GUIChildren getButtons() {
+		return new GUIChildren(buttons);
+	}
+	protected void addButton(GUIObject button) {
+		buttons.add(button);
+	}
 	public void render(Graphics2D g) {
 		children.render(g);
 	}

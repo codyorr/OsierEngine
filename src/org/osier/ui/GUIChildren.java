@@ -7,10 +7,14 @@ import java.util.List;
 
 public class GUIChildren {
 	
-	private List<GUIObject> list;
+	protected List<GUIObject> list;
 	
 	public GUIChildren() {
 		list = new ArrayList<GUIObject>();
+	}
+	
+	public GUIChildren(GUIChildren children) {
+		this.list = children.list;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -28,6 +32,7 @@ public class GUIChildren {
 		
 		return null;
 	}
+	
 	
 	protected void add(GUIObject obj) {
 		list.add(obj);

@@ -40,6 +40,7 @@ public class GUIObject extends BaseGUIObject {
 		borderHeight = height + borderSize/2;
 		visible =  true;
 	}
+
 	
 	protected void render(Graphics2D g) {
 		if(!visible)return;
