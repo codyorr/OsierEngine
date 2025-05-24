@@ -105,18 +105,21 @@ public class OsierEngine implements CoreListener {
          				update();
          				try {
          					g = (Graphics2D) bs.getDrawGraphics();
-	         				g.clearRect(0, 0, window.getWidth(), window.getHeight());
-	         			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	         				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-	         				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	         				g.translate(window.getInsets().left, window.getInsets().top);
-	         			    window.render(g);
-	         			    render(g);
-	         			    bs.show();
-	         			    g.dispose();
-     	                }catch(Exception e) {
-     	                	//nothing
-     	                }
+         				}catch(Exception e) {
+         					window.createBufferStrategy(2);
+         					bs = window.getBufferStrategy();
+         					g = (Graphics2D) bs.getDrawGraphics();
+         				}
+         				g.clearRect(0, 0, window.getWidth(), window.getHeight());
+         			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+         				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+         				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+         				//g.translate(window.getInsets().left, window.getInsets().top);
+         			    window.render(g);
+         			    render(g);
+         			    bs.show();
+         			    g.dispose();
+     	           
          				frames++;
          			}
          		}
@@ -133,9 +136,7 @@ public class OsierEngine implements CoreListener {
 		//initiation
 		load();
 		window.setVisible(true);
-		window.createBufferStrategy(2);
-        bs = window.getBufferStrategy();
-		g = (Graphics2D) bs.getDrawGraphics();
+		
 
 		
 		//INPUT EVENTS
@@ -212,6 +213,7 @@ public class OsierEngine implements CoreListener {
 
 		    	inputQueue.add(() -> {
 		    		windowResizing=false;
+		    		window.update();
 	    		    windowResized(window.getWidth(),window.getHeight());
 		    	});
 		    }

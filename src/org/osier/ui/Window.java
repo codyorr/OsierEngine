@@ -21,45 +21,28 @@ public class Window extends BaseGUIObject {
 		this.y = 0;
 		this.width = width;
 		this.height = height;
-		this.frame = new Frame() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-			public void setSize(int width, int height) {
-				super.setSize(width,height);
-				Window.this.createBufferStrategy(2);
-				Window.this.width = width;
-				Window.this.height = height;
-				Window.this.children.updateSizes();
-				System.out.println(width);
-			}
-			
-			@Override
-			public void setBounds(int x, int y, int width, int height) {
-			    super.setBounds(x, y, width, height);
-				Window.this.createBufferStrategy(2);
-			    Window.this.width = width;
-			    Window.this.height = height;
-				Window.this.children.updateSizes();
-				System.out.println(width);
-
-			}
-		};
+		this.frame = new Frame();
 		frame.setLayout(null);
 		frame.setIgnoreRepaint(true);
 		frame.setTitle(title);
 		frame.setBackground(Color.black);
 		frame.setUndecorated(!decorated);
-		if(decorated) {
+		/*if(decorated) {
 			frame.setSize(width+getInsets().left, height+getInsets().top);
 		}else {
 			frame.setSize(width,height);
-		}
+		}*/
+		frame.setSize(width,height);
 		frame.setLocationRelativeTo(null);
 	}
 	
 	
 
+	public void update() {
+		this.width = frame.getWidth();
+		this.height = frame.getHeight();
+		children.updateSizes();
+	}
 	public void render(Graphics2D g) {
 		children.render(g);
 	}
@@ -81,6 +64,14 @@ public class Window extends BaseGUIObject {
 	}
 	
 	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		/*if(!frame.isUndecorated()) {
+			frame.setSize(width+getInsets().left, height+getInsets().top);
+		}else {
+			frame.setSize(width,height);
+		}*/
+		
 		frame.setSize(width,height);
 	}
 	
@@ -92,20 +83,20 @@ public class Window extends BaseGUIObject {
 		return frame.getY();
 	}
 	
-	public int getOriginX() {
+	/*public int getOriginX() {
 		return x;
 	}
 	
 	public int getOriginY() {
 		return y;
-	}
+	}*/
 	
 	public int getWidth() {
-		return width;
+		return frame.getWidth();
 	}
 	
 	public int getHeight() {
-		return height;
+		return frame.getHeight();
 	}
 	
 	public Insets getInsets() {

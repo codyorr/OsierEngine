@@ -44,7 +44,7 @@ public class GUIObject extends BaseGUIObject {
 	
 	protected void render(Graphics2D g) {
 		if(!visible)return;
-		
+		//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
 
 		g.setColor(backgroundColor);
@@ -93,7 +93,7 @@ public class GUIObject extends BaseGUIObject {
 		height = (int)Math.round(parent.height * scaleY) + offsetY;
 		setBorderSize(borderSize);
 		children.updateSizes();
-		updatePosition();
+		updatePosition();		
 	}
 	
 	public void setOrigin(float scaleX, float scaleY) {
