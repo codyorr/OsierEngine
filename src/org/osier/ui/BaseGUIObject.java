@@ -35,4 +35,8 @@ public class BaseGUIObject {
 		return children.get(i);
 	}
 	
+	public GUIChildren getChildren() {
+		return children;
+	}
+	
 }

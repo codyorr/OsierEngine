@@ -1,4 +1,4 @@
-package org.osier;
+package org.osier.listeners;
 
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;

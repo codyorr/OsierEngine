@@ -35,6 +35,6 @@ public class Test extends OsierEngine{
 	
 	@Override
 	public void mouseClicked(MouseEvent e, boolean processed) {
-		
+		System.out.println("CLICK");
 	}
 }

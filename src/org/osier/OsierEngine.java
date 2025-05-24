@@ -4,18 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.osier.listeners.CoreListener;
 import org.osier.ui.Window;
 
 public class OsierEngine implements CoreListener {
@@ -39,17 +33,14 @@ public class OsierEngine implements CoreListener {
 	private float frameTime;
 	private boolean shouldRender;
 	private boolean vsyncEnabled;
-	private boolean windowResizing;
-	private boolean mouseMoving;
+	//private boolean windowResizing;
+	//private boolean mouseMoving;
 	private boolean running;
 	private final long SECOND_NANOS = 1000000000L;
 
 	
 	public OsierEngine(String title, int width, int height, boolean decorated) {
-		this.window = new Window(title, width, height, decorated);
-		this.window.setName("MainWindow");
 		this.inputQueue = new ConcurrentLinkedQueue<Runnable>();
-		
 		this.display = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 		this.displayWidth = display.getDisplayMode().getWidth();
 		this.displayHeight = display.getDisplayMode().getHeight();
@@ -67,6 +58,70 @@ public class OsierEngine implements CoreListener {
          		long startTime;
          		long elapsedTime;
          		int refreshRate;
+
+        		window = new Window(title, width, height, decorated) {
+        			public void mouseClicked(MouseEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.mouseClicked(e, false);
+        				});
+        			}
+        			public void mousePressed(MouseEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.mousePressed(e, false);
+        				});
+        			}
+        			public void mouseReleased(MouseEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.mouseReleased(e, false);
+        				});
+        			}
+        			public void mouseEntered(MouseEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.mouseEntered(e);
+        				});
+        			}
+        			public void mouseExited(MouseEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.mouseExited(e);
+        				});
+        			}
+        			public void mouseMoved(MouseEvent e, boolean isDragging) {
+        				//if(mouseMoving) return;
+        				//mouseMoving=true;
+        				inputQueue.add(() -> {
+        					//mouseMoving = false;
+        					OsierEngine.this.mouseMoved(e, isDragging);
+        				});
+        			}
+        			public void keyPressed(KeyEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.keyPressed(e, false);
+        				});
+        			}
+        			public void keyReleased(KeyEvent e) {
+        				inputQueue.add(() -> {
+        					OsierEngine.this.keyReleased(e, false);
+        				});
+        			}
+        			public void windowResized(int width, int height) {
+        				//if(windowResizing) return;
+            			//windowResizing=true;
+
+        		    	inputQueue.add(() -> {
+        		    		//windowResizing=false;
+        	    		    OsierEngine.this.windowResized(window.getWidth(),window.getHeight());
+        		    	});
+        			}
+        			public void windowClosing() {
+        				OsierEngine.this.stop();
+        			}
+        		};
+         		load();
+        		window.setName("MainWindow");
+        		window.setVisible(true);
+        		window.createBufferStrategy(2);
+        		bs = window.getBufferStrategy();
+        		g = (Graphics2D) bs.getDrawGraphics();
          		
          		while(running) {
          			shouldRender = false;
@@ -115,7 +170,9 @@ public class OsierEngine implements CoreListener {
          				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
          				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
          				//g.translate(window.getInsets().left, window.getInsets().top);
-         			    window.render(g);
+         			    for(Window window : Window.windows) {
+         			    	window.render(g);
+         			    }
          			    render(g);
          			    bs.show();
          			    g.dispose();
@@ -132,100 +189,6 @@ public class OsierEngine implements CoreListener {
 	public void start() {
 		if(running)return;
 		running = true;
-		
-		//initiation
-		load();
-		window.setVisible(true);
-		
-
-		
-		//INPUT EVENTS
-		window.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.mouseClicked(e, false);
-				});
-			}
-			public void mousePressed(MouseEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.mousePressed(e, false);
-				});
-			}
-			public void mouseReleased(MouseEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.mouseReleased(e, false);
-				});
-			}
-			public void mouseEntered(MouseEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.mouseEntered(e);
-				});
-			}
-			public void mouseExited(MouseEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.mouseExited(e);
-				});
-			}
-		});
-		
-		window.addMouseMotionListener(new MouseMotionListener() {
-			public void mouseDragged(MouseEvent e) {
-				if(mouseMoving) return;
-				mouseMoving = true;
-				
-				inputQueue.add(() -> {
-					mouseMoving = false;
-					OsierEngine.this.mouseMoved(e, true);
-				});
-			}
-
-			public void mouseMoved(MouseEvent e) {
-				if(mouseMoving) return;
-				mouseMoving=true;
-				inputQueue.add(() -> {
-					mouseMoving = false;
-					OsierEngine.this.mouseMoved(e, false);
-				});
-			}
-			
-		});
-		
-		window.addKeyListener(new KeyListener() {
-			public void keyTyped(KeyEvent e) {}
-			public void keyPressed(KeyEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.keyPressed(e, false);
-				});
-			}
-
-			public void keyReleased(KeyEvent e) {
-				inputQueue.add(() -> {
-					OsierEngine.this.keyReleased(e, false);
-				});
-			}
-			
-		});
-		
-		window.addComponentListener(new ComponentAdapter() {
-		    public void componentResized(ComponentEvent componentEvent) {
-		    	if(windowResizing) return;
-    			windowResizing=true;
-
-		    	inputQueue.add(() -> {
-		    		windowResizing=false;
-		    		window.update();
-	    		    windowResized(window.getWidth(),window.getHeight());
-		    	});
-		    }
-		});
-		
-        window.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                stop();
-            }
-        }); 
-		
-        //start the render thread
 		renderThread.start();
 	}
 	

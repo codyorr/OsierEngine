@@ -1,4 +1,4 @@
-package org.osier.ui;
+package org.osier.listeners;
 
 import java.awt.event.MouseEvent;
 

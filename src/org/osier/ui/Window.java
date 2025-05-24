@@ -5,13 +5,22 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Window extends BaseGUIObject {
+import org.osier.listeners.WindowListener;
+
+public class Window extends BaseGUIObject implements WindowListener {
+	public static List<Window> windows = new ArrayList<Window>();
 	
 	private Frame frame;
 
@@ -34,15 +43,10 @@ public class Window extends BaseGUIObject {
 		}*/
 		frame.setSize(width,height);
 		frame.setLocationRelativeTo(null);
+		
+		windows.add(this);
 	}
 	
-	
-
-	public void update() {
-		this.width = frame.getWidth();
-		this.height = frame.getHeight();
-		children.updateSizes();
-	}
 	public void render(Graphics2D g) {
 		children.render(g);
 	}
@@ -108,7 +112,83 @@ public class Window extends BaseGUIObject {
 	}
 	
 	public void setVisible(boolean visible) {
-		frame.setVisible(visible);
+		if(visible && !frame.isVisible()) {
+			frame.setVisible(visible);
+
+			frame.addMouseListener(new MouseListener() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					Window.this.mouseClicked(e);
+				}
+	
+				@Override
+				public void mousePressed(MouseEvent e) {
+					Window.this.mousePressed(e);
+				}
+	
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					Window.this.mouseReleased(e);
+				}
+	
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					Window.this.mouseEntered(e);
+				}
+	
+				@Override
+				public void mouseExited(MouseEvent e) {
+					Window.this.mouseExited(e);
+				}
+				
+			});
+			frame.addMouseMotionListener(new MouseMotionListener() {
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					Window.this.mouseMoved(e, true);
+				}
+	
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					Window.this.mouseMoved(e, false);
+				}
+				
+			});
+			frame.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					
+				}
+	
+				@Override
+				public void keyPressed(KeyEvent e) {
+					Window.this.keyPressed(e);
+				}
+	
+				@Override
+				public void keyReleased(KeyEvent e) {
+					Window.this.keyReleased(e);
+				}
+				
+			});
+			
+			frame.addComponentListener(new ComponentAdapter() {
+			    public void componentResized(ComponentEvent componentEvent) {
+			    	width = frame.getWidth();
+					height = frame.getHeight();
+					children.updateSizes();
+			    	Window.this.windowResized(width, height);
+			    }
+			});
+			
+			frame.addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent e) {
+		            Window.this.windowClosing();
+		        }
+			});
+		}else {
+			frame.setVisible(visible);
+		}
 	}
 	
 	public boolean isVisible() {
@@ -124,27 +204,4 @@ public class Window extends BaseGUIObject {
 	public BufferStrategy getBufferStrategy() {
 		return frame.getBufferStrategy();
 	}
-	
-	public void addMouseListener(MouseListener listener) {
-		frame.addMouseListener(listener);
-	}
-	
-	public void addMouseMotionListener(MouseMotionListener listener) {
-		frame.addMouseMotionListener(listener);
-	}
-	
-	public void addKeyListener(KeyListener listener) {
-		frame.addKeyListener(listener);
-	}
-	
-	public void addComponentListener(ComponentAdapter adapter) {
-		frame.addComponentListener(adapter);
-	}
-	
-	public void addWindowListener(WindowListener listener) {
-		frame.addWindowListener(listener);
-	}
-	
-	
-
 }

@@ -12,6 +12,7 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import org.osier.listeners.GUIButtonListener;
 import org.osier.util.Logger;
 
 public class ImageButton extends ImageLabel implements GUIButtonListener {
