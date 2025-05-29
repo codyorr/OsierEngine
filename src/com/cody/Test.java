@@ -2,9 +2,11 @@ package com.cody;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import org.osier.OsierEngine;
 import org.osier.ui.GUIFrame;
+import org.osier.ui.Window;
 
 public class Test extends OsierEngine{
 
@@ -12,9 +14,10 @@ public class Test extends OsierEngine{
 		super(title, width, height, decorated);
 	}
 	
-	private GUIFrame frame;
+	private GUIFrame frame, frame2;
 	@Override
 	public void load() {
+		window.setIconImage("src/data/icons/osier.png");
 		frame = new GUIFrame();
 		frame.setSize(0, 0.5f, 0, 0.5f);
 		frame.setPosition(0, 0.5f, 0, 0.5f);

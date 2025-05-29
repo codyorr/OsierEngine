@@ -20,7 +20,6 @@ public class OsierEngine implements CoreListener {
 
 	private Graphics2D g;
 	public Window window;
-	private BufferStrategy bs;
 	private Thread renderThread;
 	private GraphicsDevice display;
 	private ConcurrentLinkedQueue<Runnable> inputQueue;
@@ -116,13 +115,10 @@ public class OsierEngine implements CoreListener {
         				OsierEngine.this.stop();
         			}
         		};
+        		window.enable();
          		load();
         		window.setName("MainWindow");
-        		window.setVisible(true);
-        		window.createBufferStrategy(2);
-        		bs = window.getBufferStrategy();
-        		g = (Graphics2D) bs.getDrawGraphics();
-         		
+
          		while(running) {
          			shouldRender = false;
          			startTime = System.nanoTime();
@@ -158,24 +154,23 @@ public class OsierEngine implements CoreListener {
          			//handle update/render
          			if(shouldRender) {
          				update();
-         				try {
-         					g = (Graphics2D) bs.getDrawGraphics();
-         				}catch(Exception e) {
-         					window.createBufferStrategy(2);
-         					bs = window.getBufferStrategy();
-         					g = (Graphics2D) bs.getDrawGraphics();
-         				}
-         				g.clearRect(0, 0, window.getWidth(), window.getHeight());
-         			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-         				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-         				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-         				//g.translate(window.getInsets().left, window.getInsets().top);
          			    for(Window window : Window.windows) {
+         			    	try {
+             					g = window.getDrawGraphics();
+             				}catch(Exception e) {
+             					window.createBufferStrategy(2);
+             					g = window.getDrawGraphics();
+             				}
+             				g.clearRect(0, 0, window.getWidth(), window.getHeight());
+             			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+             				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+             				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+             				//g.translate(window.getInsets().left, window.getInsets().top);
          			    	window.render(g);
+         			    	//render(g);
+              			    window.show();
+              			    g.dispose();
          			    }
-         			    render(g);
-         			    bs.show();
-         			    g.dispose();
      	           
          				frames++;
          			}
