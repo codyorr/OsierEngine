@@ -1,12 +1,9 @@
 package org.osier;
 
-import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferStrategy;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.osier.listeners.CoreListener;
@@ -18,7 +15,6 @@ public class OsierEngine implements CoreListener {
 	 * TODO
 	 */
 
-	private Graphics2D g;
 	public Window window;
 	private Thread renderThread;
 	private GraphicsDevice display;
@@ -32,7 +28,7 @@ public class OsierEngine implements CoreListener {
 	private float frameTime;
 	private boolean shouldRender;
 	private boolean vsyncEnabled;
-	//private boolean windowResizing;
+	private boolean windowResizing;
 	//private boolean mouseMoving;
 	private boolean running;
 	private final long SECOND_NANOS = 1000000000L;
@@ -103,11 +99,11 @@ public class OsierEngine implements CoreListener {
         				});
         			}
         			public void windowResized(int width, int height) {
-        				//if(windowResizing) return;
-            			//windowResizing=true;
+        				if(windowResizing) return;
+            			windowResizing=true;
 
         		    	inputQueue.add(() -> {
-        		    		//windowResizing=false;
+        		    		windowResizing=false;
         	    		    OsierEngine.this.windowResized(window.getWidth(),window.getHeight());
         		    	});
         			}
@@ -116,6 +112,7 @@ public class OsierEngine implements CoreListener {
         			}
         		};
         		window.enable();
+        		window.setResizable(true);
          		load();
         		window.setName("MainWindow");
 
@@ -154,24 +151,7 @@ public class OsierEngine implements CoreListener {
          			//handle update/render
          			if(shouldRender) {
          				update();
-         			    for(Window window : Window.windows) {
-         			    	try {
-             					g = window.getDrawGraphics();
-             				}catch(Exception e) {
-             					window.createBufferStrategy(2);
-             					g = window.getDrawGraphics();
-             				}
-             				g.clearRect(0, 0, window.getWidth(), window.getHeight());
-             			    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-             				g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-             				g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-             				//g.translate(window.getInsets().left, window.getInsets().top);
-         			    	window.render(g);
-         			    	//render(g);
-              			    window.show();
-              			    g.dispose();
-         			    }
-     	           
+         				window.render();
          				frames++;
          			}
          		}

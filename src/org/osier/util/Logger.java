@@ -9,4 +9,8 @@ public class Logger {
 	public static void log(String message) {
 		logger.log(Level.ALL, message);
 	}
+	
+	public static void print(Object obj) {
+		System.out.println(obj);
+	}
 }

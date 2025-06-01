@@ -23,13 +23,14 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.osier.listeners.GUIButtonListener;
 import org.osier.listeners.WindowListener;
 
-
-public class Window extends BaseGUIObject implements WindowListener {
+public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	//public static List<Window> windows = new ArrayList<Window>();
 	
 	private Frame frame;
+	private Window parentWindow;
 	private Graphics2D g;
 	private BufferStrategy bs;
 	private boolean closing;
@@ -40,9 +41,8 @@ public class Window extends BaseGUIObject implements WindowListener {
 	private Color backgroundColor;
 	private int windowPosX,windowPosY;
 	private Insets insets;
-	private boolean blocked;
-	private BlockingDialog blockingDialog;
-	public Window(String title, int width, int height, boolean decorated) {
+	private boolean attached;
+	public BlockingDialog(String title, int width, int height, boolean decorated) {
 		this.title = title;
 		this.decorated = decorated;
 		this.backgroundColor = Color.black;
@@ -53,6 +53,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 		this.height = height;
 		visible = false;
 		disabled = true;
+		attached = false;
 	}
 	
 	public void render() {
@@ -71,17 +72,9 @@ public class Window extends BaseGUIObject implements WindowListener {
 		//g.translate(window.getInsets().left, window.getInsets().top);
 		children.render(g);
 	    show();
-	    if(blocked) {
-	    	blockingDialog.render();
-	    }
 	    g.dispose();
 	}
 	
-	
-	public void attachBlockingDialog(BlockingDialog dialog) {
-		blockingDialog = dialog;
-		dialog.enable(this);
-	}
 	
 	public String getTitle() {
 		return title;
@@ -160,39 +153,39 @@ public class Window extends BaseGUIObject implements WindowListener {
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					Window.this.mouseClicked(e);
+					BlockingDialog.this.mouseClicked(e);
 				}
 	
 				@Override
 				public void mousePressed(MouseEvent e) {
-					Window.this.mousePressed(e);
+					BlockingDialog.this.mousePressed(e);
 				}
 	
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					Window.this.mouseReleased(e);
+					BlockingDialog.this.mouseReleased(e);
 				}
 	
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					Window.this.mouseEntered(e);
+					BlockingDialog.this.mouseEntered(e);
 				}
 	
 				@Override
 				public void mouseExited(MouseEvent e) {
-					Window.this.mouseExited(e);
+					BlockingDialog.this.mouseExited(e);
 				}
 				
 			});
 			frame.addMouseMotionListener(new MouseMotionListener() {
 				@Override
 				public void mouseDragged(MouseEvent e) {
-					Window.this.mouseMoved(e, true);
+					BlockingDialog.this.mouseMoved(e, true);
 				}
 	
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					Window.this.mouseMoved(e, false);
+					BlockingDialog.this.mouseMoved(e, false);
 				}
 				
 			});
@@ -204,12 +197,12 @@ public class Window extends BaseGUIObject implements WindowListener {
 	
 				@Override
 				public void keyPressed(KeyEvent e) {
-					Window.this.keyPressed(e);
+					BlockingDialog.this.keyPressed(e);
 				}
 	
 				@Override
 				public void keyReleased(KeyEvent e) {
-					Window.this.keyReleased(e);
+					BlockingDialog.this.keyReleased(e);
 				}
 				
 			});
@@ -219,13 +212,14 @@ public class Window extends BaseGUIObject implements WindowListener {
 			    	width = frame.getWidth();
 					height = frame.getHeight();
 					children.updateSizes();
-			    	Window.this.windowResized(width, height);
+			    	BlockingDialog.this.windowResized(width, height);
 			    }
 			});
 			
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
-		            Window.this.windowClosing();
+		            BlockingDialog.this.windowClosing();
+		            parentWindow.setBlocked(false);
 		            disable();
 		        }
 			});
@@ -251,18 +245,12 @@ public class Window extends BaseGUIObject implements WindowListener {
 		frame.dispose();
 	}
 	
-	protected void setBlocked(boolean blocked) {
-		this.blocked = blocked;
-		frame.setEnabled(!blocked);
-	}
-	
-	public boolean isBlocked() {
-		return blocked;
-	}
-	
-	public void enable() {
-		if(!disabled) return;
+	protected void enable(Window window) {
+		if(!disabled || attached) return;
+		attached = true;
 		disabled = false;
+		parentWindow = window;
+		window.setBlocked(true);
 		frame = new Frame();
 		frame.setLayout(null);
 		frame.setIgnoreRepaint(true);
@@ -281,7 +269,6 @@ public class Window extends BaseGUIObject implements WindowListener {
 		}else {
 			frame.setSize(width,height);
 		}
-		
 		//windows.add(this);
 	}
 	
