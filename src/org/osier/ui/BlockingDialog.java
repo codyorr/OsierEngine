@@ -32,7 +32,6 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	private boolean disabled;
 	private String title;
 	private boolean decorated;
-	private boolean visible;
 	private Color backgroundColor;
 	private int windowPosX,windowPosY;
 	private Insets insets;
@@ -45,7 +44,6 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		this.y = 0;
 		this.width = width;
 		this.height = height;
-		visible = false;
 		disabled = true;
 	}
 	
@@ -211,12 +209,10 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		}else {
 			frame.setVisible(visible);
 		}
-		
-		this.visible = visible;
 	}
 	
 	public boolean isVisible() {
-		return visible;
+		return frame.isVisible();
 	}
 	
 	protected void enable(Window window) {
