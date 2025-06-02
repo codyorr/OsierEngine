@@ -255,11 +255,13 @@ public class Window extends BaseGUIObject implements WindowListener {
 		windowPosY = frame.getLocation().y;
 		setVisible(true);
 		insets = frame.getInsets();
-		if(decorated) {
+		/*if(decorated) {
 			frame.setSize(width+insets.left, height+insets.top);
 		}else {
 			frame.setSize(width,height);
-		}
+		}*/
+		
+		frame.setSize(width,height);
 	}
 	
 	public void disable() {
