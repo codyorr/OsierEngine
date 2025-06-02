@@ -36,7 +36,6 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	private Color backgroundColor;
 	private int windowPosX,windowPosY;
 	private Insets insets;
-	private boolean attached;
 	public BlockingDialog(String title, int width, int height, boolean decorated) {
 		this.title = title;
 		this.decorated = decorated;
@@ -48,7 +47,6 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		this.height = height;
 		visible = false;
 		disabled = true;
-		attached = false;
 	}
 	
 	public void render() {
@@ -61,6 +59,7 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 			bs = frame.getBufferStrategy();
 			g = (Graphics2D) bs.getDrawGraphics();
 		}
+		
 		g.clearRect(0, 0, width,height);
 	    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -221,8 +220,7 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	}
 	
 	protected void enable(Window window) {
-		if(!disabled || attached) return;
-		attached = true;
+		if(!disabled) return;
 		disabled = false;
 		window.setBlocked(true);
 		frame = new Frame();
