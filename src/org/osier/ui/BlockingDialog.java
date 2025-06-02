@@ -18,22 +18,17 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.osier.listeners.GUIButtonListener;
 import org.osier.listeners.WindowListener;
 
 public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	//public static List<Window> windows = new ArrayList<Window>();
 	
 	private Frame frame;
-	private Window parentWindow;
 	private Graphics2D g;
 	private BufferStrategy bs;
-	private boolean closing;
 	private boolean disabled;
 	private String title;
 	private boolean decorated;
@@ -60,10 +55,11 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		if(disabled || !frame.isVisible())return;
 		
 		try {
-			g = getDrawGraphics();
+			g = (Graphics2D) bs.getDrawGraphics();
 		}catch(Exception e) {
-			createBufferStrategy(2);
-			g = getDrawGraphics();
+			frame.createBufferStrategy(2);
+			bs = frame.getBufferStrategy();
+			g = (Graphics2D) bs.getDrawGraphics();
 		}
 		g.clearRect(0, 0, width,height);
 	    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -71,10 +67,9 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		//g.translate(window.getInsets().left, window.getInsets().top);
 		children.render(g);
-	    show();
+	    bs.show();
 	    g.dispose();
 	}
-	
 	
 	public String getTitle() {
 		return title;
@@ -125,14 +120,6 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		return windowPosY;
 	}
 	
-	/*public int getOriginX() {
-		return x;
-	}
-	
-	public int getOriginY() {
-		return y;
-	}*/
-	
 	public int getWidth() {
 		return width;
 	}
@@ -149,7 +136,7 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	private void setVisible(boolean visible) {
 		if(visible && !frame.isVisible()) {
 			frame.setVisible(visible);
-			createBufferStrategy(2);
+			
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -212,14 +199,13 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 			    	width = frame.getWidth();
 					height = frame.getHeight();
 					children.updateSizes();
-			    	BlockingDialog.this.windowResized(width, height);
+			    	windowResized(width, height);
 			    }
 			});
 			
 			frame.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent e) {
 		            BlockingDialog.this.windowClosing();
-		            parentWindow.setBlocked(false);
 		            disable();
 		        }
 			});
@@ -234,22 +220,10 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		return visible;
 	}
 	
-	public boolean isClosing() {
-		return closing;
-	}
-	
-	public void disable() {
-		if(disabled) return;
-		disabled = true;
-		//windows.remove(this);
-		frame.dispose();
-	}
-	
 	protected void enable(Window window) {
 		if(!disabled || attached) return;
 		attached = true;
 		disabled = false;
-		parentWindow = window;
 		window.setBlocked(true);
 		frame = new Frame();
 		frame.setLayout(null);
@@ -269,9 +243,14 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		}else {
 			frame.setSize(width,height);
 		}
-		//windows.add(this);
 	}
 	
+	public void disable() {
+		if(disabled) return;
+		disabled = true;
+		frame.dispose();
+	}
+
 	public void setBackgroundColor(Color color) {
 		backgroundColor = color;
 		if(disabled) return;
@@ -281,29 +260,12 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
-	
-	
-	public void createBufferStrategy(int buffers) {
-		if(disabled || !frame.isVisible()) return;
-		frame.createBufferStrategy(buffers);
-		bs = frame.getBufferStrategy();
-	}
-	
-	public BufferStrategy getBufferStrategy() {
-		return disabled ? null : bs;
-	}
-	
+
 	public void setResizable(boolean resizable) {
 		frame.setResizable(resizable);
 	}
 	
-	public Graphics2D getDrawGraphics() {
-		return disabled ? null : (Graphics2D) bs.getDrawGraphics();
-	}
-	
-	public void show() {
-		try {
-			bs.show();
-		}catch(IllegalStateException e) {}
+	public boolean isResizable() {
+		return frame.isResizable();
 	}
 }

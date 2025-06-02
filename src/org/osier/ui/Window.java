@@ -18,21 +18,16 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.osier.listeners.WindowListener;
 
 
-public class Window extends BaseGUIObject implements WindowListener {
-	//public static List<Window> windows = new ArrayList<Window>();
-	
+public class Window extends BaseGUIObject implements WindowListener {	
 	private Frame frame;
 	private Graphics2D g;
 	private BufferStrategy bs;
-	private boolean closing;
 	private boolean disabled;
 	private String title;
 	private boolean decorated;
@@ -42,6 +37,8 @@ public class Window extends BaseGUIObject implements WindowListener {
 	private Insets insets;
 	private boolean blocked;
 	private BlockingDialog blockingDialog;
+	
+	
 	public Window(String title, int width, int height, boolean decorated) {
 		this.title = title;
 		this.decorated = decorated;
@@ -59,10 +56,11 @@ public class Window extends BaseGUIObject implements WindowListener {
 		if(disabled || !frame.isVisible())return;
 		
 		try {
-			g = getDrawGraphics();
+			g = (Graphics2D) bs.getDrawGraphics();
 		}catch(Exception e) {
-			createBufferStrategy(2);
-			g = getDrawGraphics();
+			frame.createBufferStrategy(2);
+			bs = frame.getBufferStrategy();
+			g = (Graphics2D) bs.getDrawGraphics();
 		}
 		g.clearRect(0, 0, width,height);
 	    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -70,7 +68,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		//g.translate(window.getInsets().left, window.getInsets().top);
 		children.render(g);
-	    show();
+	    bs.show();
 	    if(blocked) {
 	    	blockingDialog.render();
 	    }
@@ -132,14 +130,6 @@ public class Window extends BaseGUIObject implements WindowListener {
 		return windowPosY;
 	}
 	
-	/*public int getOriginX() {
-		return x;
-	}
-	
-	public int getOriginY() {
-		return y;
-	}*/
-	
 	public int getWidth() {
 		return width;
 	}
@@ -156,7 +146,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 	private void setVisible(boolean visible) {
 		if(visible && !frame.isVisible()) {
 			frame.setVisible(visible);
-			createBufferStrategy(2);
+			
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -219,7 +209,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 			    	width = frame.getWidth();
 					height = frame.getHeight();
 					children.updateSizes();
-			    	Window.this.windowResized(width, height);
+			    	windowResized(width, height);
 			    }
 			});
 			
@@ -238,17 +228,6 @@ public class Window extends BaseGUIObject implements WindowListener {
 	
 	public boolean isVisible() {
 		return visible;
-	}
-	
-	public boolean isClosing() {
-		return closing;
-	}
-	
-	public void disable() {
-		if(disabled) return;
-		disabled = true;
-		//windows.remove(this);
-		frame.dispose();
 	}
 	
 	protected void setBlocked(boolean blocked) {
@@ -281,10 +260,14 @@ public class Window extends BaseGUIObject implements WindowListener {
 		}else {
 			frame.setSize(width,height);
 		}
-		
-		//windows.add(this);
 	}
 	
+	public void disable() {
+		if(disabled) return;
+		disabled = true;
+		frame.dispose();
+	}
+
 	public void setBackgroundColor(Color color) {
 		backgroundColor = color;
 		if(disabled) return;
@@ -294,29 +277,12 @@ public class Window extends BaseGUIObject implements WindowListener {
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
-	
-	
-	public void createBufferStrategy(int buffers) {
-		if(disabled || !frame.isVisible()) return;
-		frame.createBufferStrategy(buffers);
-		bs = frame.getBufferStrategy();
-	}
-	
-	public BufferStrategy getBufferStrategy() {
-		return disabled ? null : bs;
-	}
-	
+
 	public void setResizable(boolean resizable) {
 		frame.setResizable(resizable);
 	}
 	
-	public Graphics2D getDrawGraphics() {
-		return disabled ? null : (Graphics2D) bs.getDrawGraphics();
-	}
-	
-	public void show() {
-		try {
-			bs.show();
-		}catch(IllegalStateException e) {}
+	public boolean isResizable() {
+		return frame.isResizable();
 	}
 }
