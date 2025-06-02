@@ -113,6 +113,13 @@ public class GUIObject extends BaseGUIObject {
 		}
 		if(obj!=null) {
 			obj.children.add(this);
+			if(obj instanceof Window) {
+				Window window = (Window) obj;
+				window.updateButtons();
+			}else if(obj instanceof BlockingDialog) {
+				BlockingDialog dialog = (BlockingDialog) obj;
+				dialog.updateButtons();
+			}
 			parent = obj;
 			setSize(sizeOffsetX, sizeScaleX, sizeOffsetY, sizeScaleY);
 		}

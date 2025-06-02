@@ -18,6 +18,9 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -35,6 +38,9 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	private Color backgroundColor;
 	private int windowPosX,windowPosY;
 	private Insets insets;
+	protected List<GUIButtonObject> buttons;
+	private GUIButtonObject targetButton;
+	
 	public BlockingDialog(String title, int width, int height, boolean decorated) {
 		this.title = title;
 		this.decorated = decorated;
@@ -44,7 +50,8 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 		this.y = 0;
 		this.width = width;
 		this.height = height;
-		disabled = true;
+		this.disabled = true;
+		this.buttons = new ArrayList<GUIButtonObject>();
 	}
 	
 	public void render() {
@@ -137,17 +144,34 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					BlockingDialog.this.mouseClicked(e);
+					if(targetButton != null) {
+						targetButton.mouseClicked(e);
+						BlockingDialog.this.mouseClicked(e, true);
+						return;
+					}
+					BlockingDialog.this.mouseClicked(e, false);
 				}
 	
 				@Override
 				public void mousePressed(MouseEvent e) {
-					BlockingDialog.this.mousePressed(e);
+					if(targetButton != null) {
+						targetButton.pressed = true;
+						targetButton.mousePressed(e);
+						BlockingDialog.this.mousePressed(e,  true);
+						return;
+					}
+					BlockingDialog.this.mousePressed(e, false);
 				}
 	
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					BlockingDialog.this.mouseReleased(e);
+					if(targetButton != null && targetButton.pressed) {
+						targetButton.pressed = false;
+						targetButton.mouseReleased(e);
+						BlockingDialog.this.mouseReleased(e, true);
+						return;
+					}
+					BlockingDialog.this.mouseReleased(e, false);
 				}
 	
 				@Override
@@ -170,6 +194,19 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 				@Override
 				public void mouseMoved(MouseEvent e) {
 					BlockingDialog.this.mouseMoved(e, false);
+					if(targetButton == null) {
+						for(GUIButtonObject button : buttons) {
+							if(button.contains(e.getX(), e.getY())) {
+								targetButton = button;
+								button.hovered = true;
+								button.mouseEntered(e);
+								return;
+							}
+						}
+					}else if(!targetButton.contains(e.getX(), e.getY())) {
+						targetButton.hovered = false;
+						targetButton = null;
+					}
 				}
 				
 			});
@@ -263,5 +300,21 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	
 	public boolean isResizable() {
 		return frame.isResizable();
+	}
+	
+
+	protected void updateButtons() {
+		buttons = new ArrayList<GUIButtonObject>();
+		collectButtons(children);
+		buttons.sort(Comparator.comparingInt(GUIObject::getDisplayOrder).reversed());
+	}
+	
+	private void collectButtons(GUIChildren guiChildren) {
+		for(GUIObject child : guiChildren.list) {
+			if(child instanceof GUIButtonObject) {
+				buttons.add((GUIButtonObject)child);				
+			}
+			collectButtons(child.getChildren());
+		}
 	}
 }

@@ -18,6 +18,9 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -25,6 +28,7 @@ import org.osier.listeners.WindowListener;
 
 
 public class Window extends BaseGUIObject implements WindowListener {	
+	
 	private Frame frame;
 	private Graphics2D g;
 	private BufferStrategy bs;
@@ -36,6 +40,9 @@ public class Window extends BaseGUIObject implements WindowListener {
 	private Insets insets;
 	private boolean blocked;
 	private BlockingDialog blockingDialog;
+	private GUIButtonObject targetButton;
+	
+	protected List<GUIButtonObject> buttons;
 	
 	
 	public Window(String title, int width, int height, boolean decorated) {
@@ -47,7 +54,9 @@ public class Window extends BaseGUIObject implements WindowListener {
 		this.y = 0;
 		this.width = width;
 		this.height = height;
-		disabled = true;
+		this.disabled = true;
+		this.buttons = new ArrayList<GUIButtonObject>();
+		
 	}
 	
 	public void render() {
@@ -148,17 +157,34 @@ public class Window extends BaseGUIObject implements WindowListener {
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					Window.this.mouseClicked(e);
+					if(targetButton != null) {
+						targetButton.mouseClicked(e);
+						Window.this.mouseClicked(e, true);
+						return;
+					}
+					Window.this.mouseClicked(e, false);
 				}
 	
 				@Override
 				public void mousePressed(MouseEvent e) {
-					Window.this.mousePressed(e);
+					if(targetButton != null) {
+						targetButton.pressed = true;
+						targetButton.mousePressed(e);
+						Window.this.mousePressed(e,  true);
+						return;
+					}
+					Window.this.mousePressed(e, false);
 				}
 	
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					Window.this.mouseReleased(e);
+					if(targetButton != null && targetButton.pressed) {
+						targetButton.pressed = false;
+						targetButton.mouseReleased(e);
+						Window.this.mouseReleased(e, true);
+						return;
+					}
+					Window.this.mouseReleased(e, false);
 				}
 	
 				@Override
@@ -181,6 +207,19 @@ public class Window extends BaseGUIObject implements WindowListener {
 				@Override
 				public void mouseMoved(MouseEvent e) {
 					Window.this.mouseMoved(e, false);
+					if(targetButton == null) {
+						for(GUIButtonObject button : buttons) {
+							if(button.contains(e.getX(), e.getY())) {
+								targetButton = button;
+								button.hovered = true;
+								button.mouseEntered(e);
+								return;
+							}
+						}
+					}else if(!targetButton.contains(e.getX(), e.getY())) {
+						targetButton.hovered = false;
+						targetButton = null;
+					}
 				}
 				
 			});
@@ -282,5 +321,21 @@ public class Window extends BaseGUIObject implements WindowListener {
 	
 	public boolean isResizable() {
 		return frame.isResizable();
+	}
+	
+	
+	protected void updateButtons() {
+		buttons = new ArrayList<GUIButtonObject>();
+		collectButtons(children);
+		buttons.sort(Comparator.comparingInt(GUIObject::getDisplayOrder).reversed());
+	}
+	
+	private void collectButtons(GUIChildren guiChildren) {
+		for(GUIObject child : guiChildren.list) {
+			if(child instanceof GUIButtonObject) {
+				buttons.add((GUIButtonObject)child);				
+			}
+			collectButtons(child.getChildren());
+		}
 	}
 }
