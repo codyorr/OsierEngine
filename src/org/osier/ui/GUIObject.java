@@ -3,6 +3,9 @@ package org.osier.ui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.RoundRectangle2D;
 
 import org.osier.math.ScaledDimension;
 import org.osier.math.Vector2;
@@ -23,6 +26,7 @@ public class GUIObject extends BaseGUIObject {
 	protected boolean visible;
 	protected double rotationAngle;
 	protected boolean clipDescendants;
+	protected Shape clipShape;
 	
 	protected GUIObject() {
 		name = "GUIObject";
@@ -38,6 +42,7 @@ public class GUIObject extends BaseGUIObject {
 		borderY = y - (borderSize/2);
 		borderWidth = width +  borderSize/2;
 		borderHeight = height + borderSize/2;
+		clipShape = new Rectangle(x,y,width,height);
 		visible =  true;
 	}
 
@@ -46,7 +51,11 @@ public class GUIObject extends BaseGUIObject {
 		if(!visible)return;
 		//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
-
+        
+        if(clipDescendants) {
+        	g.setClip(clipShape);
+        }
+        
 		g.setColor(backgroundColor);
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
@@ -61,10 +70,12 @@ public class GUIObject extends BaseGUIObject {
 			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
 
 		}
-		
+				
+        g.rotate(-rotationAngle, x + width / 2, y + height / 2);
+        
 		children.render(g);
 		
-        g.rotate(-rotationAngle, x + width / 2, y + height / 2);
+		g.setClip(null);
 	}	
 	
 	public void setPosition(int offsetX, float scaleX, int offsetY, float scaleY) {
@@ -77,6 +88,11 @@ public class GUIObject extends BaseGUIObject {
 
 		x = parent.x + (int)Math.round((parent.width*scaleX) - (originX*width)) + offsetX;
 		y = parent.y + (int)Math.round((parent.height*scaleY) - (originY*height)) + offsetY;
+		if(cornerRadius > 0) {
+			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
+		}else {
+			clipShape = new Rectangle(x,y,width,height);
+		}
 		setBorderSize(borderSize);
 		children.updatePositions();
 	}
@@ -125,6 +141,21 @@ public class GUIObject extends BaseGUIObject {
 		}
 	}
 	
+	public void setCornerRadius(int cornerRadius) {
+		this.cornerRadius = cornerRadius;
+		if(cornerRadius > 0) {
+			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
+		}
+	}
+	
+	public int getCornerRadius() {
+		return cornerRadius;
+	}
+	
+	public void setClipDescendants(boolean clipDescendants) {
+		this.clipDescendants = clipDescendants;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T extends BaseGUIObject> T getParent() {
 		return (T) parent;
@@ -154,12 +185,8 @@ public class GUIObject extends BaseGUIObject {
 		return new Vector2(x,y);
 	}
 	
-	public void setCornerRadius(int cornerRadius) {
-		this.cornerRadius = cornerRadius;
-	}
-	
-	public int getCornerRadius() {
-		return cornerRadius;
+	public boolean getClipDescendants() {
+		return clipDescendants;
 	}
 	
 	public int getDisplayOrder() {

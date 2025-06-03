@@ -44,9 +44,9 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 
 		}
 		
-		children.render(g);
-		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
+
+		children.render(g);
 	}	
 	
 	public void setHovered(boolean hovered) {
@@ -79,7 +79,7 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 	}
 	
 	protected boolean contains(int tx, int ty) {
-		if(tx >= x && ty >= y && tx <= width && ty <= height) {
+		if(tx >= x && ty >= y && tx <= x+width && ty <= y+height) {
 			return true;
 		}
 		

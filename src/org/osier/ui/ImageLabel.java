@@ -29,6 +29,10 @@ public class ImageLabel extends GUIObject {
 		
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
 
+        if(clipDescendants) {
+        	g.setClip(clipShape);
+        }
+        
         g.setColor(backgroundColor);
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
@@ -45,12 +49,16 @@ public class ImageLabel extends GUIObject {
 		}
 		
 		if (image != null) {
+			g.setClip(clipShape);
 	        g.drawImage(image, x, y, width, height, null);
+	        g.setClip(null);
 		}
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
 		
 		children.render(g);
+		
+		g.setClip(null);
 	}
 	
 	public void setImage(BufferedImage img) {

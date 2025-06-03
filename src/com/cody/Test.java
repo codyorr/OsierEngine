@@ -39,6 +39,8 @@ public class Test extends OsierEngine{
 		frame.setPosition(0, 0.5f, 0, 0.5f);
 		frame.setOrigin(0.5f, 0.5f);
 		frame.setCornerRadius(8);
+		BufferedImage img = frame.loadImageFromFile("src/data/icons/osier.png");
+		frame.setHoveredImage(img);
 		frame.setParent(window);
 
 		

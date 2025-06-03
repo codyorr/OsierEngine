@@ -30,6 +30,10 @@ public class ImageButton extends GUIButtonObject {
 		
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
 
+        if(clipDescendants) {
+        	g.setClip(clipShape);
+        }
+        
         g.setColor(backgroundColor);
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
@@ -46,12 +50,16 @@ public class ImageButton extends GUIButtonObject {
 		}
 		
 		if (currentImage != null) {
+			g.setClip(clipShape);
 	        g.drawImage(currentImage, x, y, width, height, null);
+	        g.setClip(null);
 		}
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
 		
 		children.render(g);
+		
+		g.setClip(null);
 	}
 	
 	
