@@ -17,6 +17,10 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 	
 	protected GUIButtonObject() {
 		name = "GUIButtonObject";
+		hoveredBackgroundColor = Color.white.darker().darker();
+		hoveredBorderColor = Color.black.brighter().brighter();
+		pressedBackgroundColor = Color.white.darker();
+		pressedBorderColor = Color.black.brighter();
 	}
 	
 	@Override
@@ -44,6 +48,35 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
 	}	
+	
+	public void setHovered(boolean hovered) {
+		this.hovered = hovered;
+	}
+	
+	public void setPressed(boolean pressed) {
+		this.pressed = pressed;
+	}
+	
+	public boolean isHovered() {
+		return hovered;
+	}
+	
+	public boolean isPressed() {
+		return pressed;
+	}
+	
+	public void setHoveredBackgroundColor(Color color) {
+		hoveredBackgroundColor = color;
+	}
+	public void setPressedBackgroundColor(Color color) {
+		pressedBackgroundColor = color;
+	}
+	public void setHoveredBorderColor(Color color) {
+		hoveredBorderColor = color;
+	}
+	public void setPressedBorderColor(Color color) {
+		pressedBorderColor = color;
+	}
 	
 	protected boolean contains(int tx, int ty) {
 		if(tx >= x && ty >= y && tx <= width && ty <= height) {

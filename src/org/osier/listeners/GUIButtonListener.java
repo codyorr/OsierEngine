@@ -9,5 +9,6 @@ public interface GUIButtonListener {
 	default public void mouseReleased(MouseEvent e) {}
 	default public void mouseEntered(MouseEvent e) {}
 	default public void mouseExited(MouseEvent e) {}
+	
 
 }

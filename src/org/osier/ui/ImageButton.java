@@ -12,14 +12,15 @@ import javax.imageio.ImageIO;
 
 import org.osier.util.Logger;
 
-public class ImageLabel extends GUIObject {
+public class ImageButton extends GUIButtonObject {
 	
-	protected BufferedImage image;
+	
+	protected BufferedImage image,hoveredImage,pressedImage,currentImage;
 	
 	protected int imageX,imageY,imageWidth,imageHeight;
 	
-	public ImageLabel() {
-		name = "ImageLabel";
+	public ImageButton() {
+		name = "ImageButton";
 	}
 	
 	
@@ -44,8 +45,8 @@ public class ImageLabel extends GUIObject {
 
 		}
 		
-		if (image != null) {
-	        g.drawImage(image, x, y, width, height, null);
+		if (currentImage != null) {
+	        g.drawImage(currentImage, x, y, width, height, null);
 		}
 		
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
@@ -53,13 +54,45 @@ public class ImageLabel extends GUIObject {
 		children.render(g);
 	}
 	
+	
+	  
+	@Override
+	public void setHovered(boolean hovered) {
+		this.hovered = hovered;
+		this.currentImage = hovered ? hoveredImage : image;
+	}
+	
+	@Override
+	public void setPressed(boolean pressed) {
+		this.pressed = pressed;
+		this.currentImage = (pressed ? pressedImage : (hovered ? hoveredImage : image));
+	}
+	
+	
+	
+	
+
+
+
 	public void setImage(BufferedImage img) {
 		image = img;
+		if(!hovered && !pressed) currentImage = image;
 	}
-
+	
+	public void setHoveredImage(BufferedImage img) {
+		hoveredImage = img;
+		if(hovered) currentImage = hoveredImage;
+	}
+	
+	public void setPressedImage(BufferedImage img) {
+		pressedImage = img;
+		if(pressed) currentImage = pressedImage;
+	}
+	
+	
 	public BufferedImage loadImageFromFile(String path) {
 	    try {
-	        return  ImageIO.read(new File(path));
+	        return ImageIO.read(new File(path));
 	    } catch (IOException e) {
 	        Logger.log("Failed to load image from file: " + path);
 	    }
@@ -67,11 +100,12 @@ public class ImageLabel extends GUIObject {
 	    return null;
 	}
 	
+	
 	public BufferedImage loadImageFromURL(String urlString) {
 	    try {
 	        URI uri = new URI(urlString);
 	        URL url = uri.toURL();
-	       return ImageIO.read(url);
+	        return ImageIO.read(url);
 	    } catch (URISyntaxException | IOException e) {
 	        Logger.log("Failed to load image from URL: " + urlString);
 	    }
