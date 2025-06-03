@@ -10,10 +10,7 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 	protected boolean hovered;
 	protected boolean pressed;
 	
-	private Color hoveredBackgroundColor;
-	private Color hoveredBorderColor;
-	private Color pressedBackgroundColor;
-	private Color pressedBorderColor;
+	protected Color hoveredBackgroundColor, hoveredBorderColor, pressedBackgroundColor, pressedBorderColor;
 	
 	protected GUIButtonObject() {
 		name = "GUIButtonObject";

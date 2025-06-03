@@ -34,16 +34,16 @@ public class ImageButton extends GUIButtonObject {
         	g.setClip(clipShape);
         }
         
-        g.setColor(backgroundColor);
+        g.setColor(pressed ? pressedBackgroundColor : (hovered ? hoveredBackgroundColor : backgroundColor));
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
-			g.setColor(borderColor);
+			g.setColor(pressed ? pressedBorderColor : (hovered ? hoveredBorderColor : borderColor));
 			g.setStroke(borderStroke);
 			g.drawRect(borderX, borderY, borderWidth, borderHeight);
 
 		}else {
 			g.fillRoundRect(x, y, width, height, cornerRadius, cornerRadius);
-			g.setColor(borderColor);
+			g.setColor(pressed ? pressedBorderColor : (hovered ? hoveredBorderColor : borderColor));
 			g.setStroke(borderStroke);
 			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
 

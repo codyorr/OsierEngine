@@ -9,7 +9,7 @@ import java.awt.Shape;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 
-public class TextButton extends GUIButtonObject {
+public class TextLabel extends GUIObject {
     private String text, fontName;
     private Color textColor, textStrokeColor;
     private Font font;
@@ -23,7 +23,8 @@ public class TextButton extends GUIButtonObject {
     private FontMetrics metrics;
     private AffineTransform textTransform;
 
-    public TextButton() {
+    public TextLabel() {
+        super();
         name = "TextLabel";
         text = "Text Label";
         lines = text.split(" ");
@@ -60,16 +61,15 @@ public class TextButton extends GUIButtonObject {
         
         
         g.setColor(backgroundColor);
-        g.setColor(pressed ? pressedBackgroundColor : (hovered ? hoveredBackgroundColor : backgroundColor));
 		if(cornerRadius<1) {
 			g.fillRect(x, y, width, height);
-			g.setColor(pressed ? pressedBorderColor : (hovered ? hoveredBorderColor : borderColor));
+			g.setColor(borderColor);
 			g.setStroke(borderStroke);
 			g.drawRect(borderX, borderY, borderWidth, borderHeight);
 
 		}else {
 			g.fillRoundRect(x, y, width, height, cornerRadius, cornerRadius);
-			g.setColor(pressed ? pressedBorderColor : (hovered ? hoveredBorderColor : borderColor));
+			g.setColor(borderColor);
 			g.setStroke(borderStroke);
 			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
 

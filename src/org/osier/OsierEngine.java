@@ -185,7 +185,7 @@ public class OsierEngine implements CoreListener {
 	public void setVSyncEnabled(boolean bool) {
 		vsyncEnabled = bool;
 		if(bool==true) {
-			frameRate = getDisplayRefreshRate();
+			frameRate = display.getDisplayMode().getRefreshRate();
 		}else {
 			frameRate = frameRateSetting;
 		}
@@ -222,14 +222,6 @@ public class OsierEngine implements CoreListener {
 	
 	public int getDisplayHeight() {
 		return displayHeight;
-	}
-	
-	public GraphicsDevice getDisplay() {
-		return display;
-	}
-	
-	public float getDisplayRefreshRate() {
-		return display.getDisplayMode().getRefreshRate();
 	}
 	
 	public int getFPS() {
