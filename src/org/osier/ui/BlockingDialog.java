@@ -155,7 +155,7 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 				@Override
 				public void mousePressed(MouseEvent e) {
 					if(targetButton != null) {
-						targetButton.pressed = true;
+						targetButton.setPressed(true);
 						targetButton.mousePressed(e);
 						BlockingDialog.this.mousePressed(e,  true);
 						return;
@@ -166,7 +166,7 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					if(targetButton != null && targetButton.pressed) {
-						targetButton.pressed = false;
+						targetButton.setPressed(false);
 						targetButton.mouseReleased(e);
 						BlockingDialog.this.mouseReleased(e, true);
 						return;
@@ -198,13 +198,15 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 						for(GUIButtonObject button : buttons) {
 							if(button.contains(e.getX(), e.getY())) {
 								targetButton = button;
-								button.hovered = true;
+								button.setHovered(true);
 								button.mouseEntered(e);
 								return;
 							}
 						}
 					}else if(!targetButton.contains(e.getX(), e.getY())) {
-						targetButton.hovered = false;
+						targetButton.setHovered(false);
+						targetButton.setPressed(false);
+						targetButton.mouseExited(e);
 						targetButton = null;
 					}
 				}

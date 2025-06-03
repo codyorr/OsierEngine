@@ -2,9 +2,11 @@ package com.cody;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 import org.osier.OsierEngine;
 import org.osier.ui.GUIFrame;
+import org.osier.ui.ImageButton;
 
 public class Test extends OsierEngine{
 
@@ -12,16 +14,33 @@ public class Test extends OsierEngine{
 		super(title, width, height, decorated);
 	}
 	
-	private GUIFrame frame;
+	private ImageButton frame;
 	@Override
 	public void load() {
 		window.setIconImage("src/data/icons/osier.png");
-		frame = new GUIFrame();
+		frame = new ImageButton() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("CLICK");
+			}
+			public void mousePressed(MouseEvent e) {
+				System.out.println("PRESS");
+			}
+			public void mouseReleased(MouseEvent e) {
+				System.out.println("RELEASED");
+			}
+			public void mouseEntered(MouseEvent e) {
+				System.out.println("ENTERED");
+			}
+			public void mouseExited(MouseEvent e) {
+				System.out.println("EXITED");
+			}
+		};
 		frame.setSize(0, 0.5f, 0, 0.5f);
 		frame.setPosition(0, 0.5f, 0, 0.5f);
 		frame.setOrigin(0.5f, 0.5f);
 		frame.setCornerRadius(8);
 		frame.setParent(window);
+
 		
 	}
 

@@ -219,6 +219,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 					}else if(!targetButton.contains(e.getX(), e.getY())) {
 						targetButton.setHovered(false);
 						targetButton.setPressed(false);
+						targetButton.mouseExited(e);
 						targetButton = null;
 					}
 				}
