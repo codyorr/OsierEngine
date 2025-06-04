@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
 
+import org.osier.listeners.Callback;
 import org.osier.listeners.WindowListener;
 
 
@@ -41,6 +43,8 @@ public class Window extends BaseGUIObject implements WindowListener {
 	private boolean blocked;
 	private BlockingDialog blockingDialog;
 	private GUIButtonObject targetButton;
+	protected ConcurrentLinkedQueue<Callback> inputQueue;
+
 	
 	protected List<GUIButtonObject> buttons;
 	
@@ -56,7 +60,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 		this.height = height;
 		this.disabled = true;
 		this.buttons = new ArrayList<GUIButtonObject>();
-		
+		this.inputQueue = new ConcurrentLinkedQueue<Callback>();
 	}
 	
 	public void render() {
@@ -157,71 +161,88 @@ public class Window extends BaseGUIObject implements WindowListener {
 			frame.addMouseListener(new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if(targetButton != null) {
-						targetButton.mouseClicked(e);
-						Window.this.mouseClicked(e, true);
-						return;
-					}
-					Window.this.mouseClicked(e, false);
+					inputQueue.add(() -> {
+						if(targetButton != null) {
+							return;
+						}
+						Window.this.mouseClicked(e, false);
+					});
 				}
 	
 				@Override
 				public void mousePressed(MouseEvent e) {
-					if(targetButton != null) {
-						targetButton.setPressed(true);
-						targetButton.mousePressed(e);
-						Window.this.mousePressed(e,  true);
-						return;
-					}
-					Window.this.mousePressed(e, false);
+					inputQueue.add(() -> {
+						if(targetButton != null) {
+							targetButton.setPressed(true);
+							targetButton.mousePressed(e);
+							Window.this.mousePressed(e,  true);
+							return;
+						}
+						Window.this.mousePressed(e, false);
+					});
 				}
 	
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					if(targetButton != null && targetButton.pressed) {
-						targetButton.setPressed(false);
-						targetButton.mouseReleased(e);
-						Window.this.mouseReleased(e, true);
-						return;
-					}
-					Window.this.mouseReleased(e, false);
+					inputQueue.add(() -> {
+						if(targetButton != null && targetButton.pressed) {
+							targetButton.setPressed(false);
+							targetButton.mouseReleased(e);
+							Window.this.mouseReleased(e, true);
+							if(targetButton.contains(e.getX(),e.getY())) {
+								targetButton.mouseClicked(e);
+								Window.this.mouseClicked(e, true);
+							}
+							return;
+						}
+						Window.this.mouseReleased(e, false);
+					});
 				}
 	
 				@Override
 				public void mouseEntered(MouseEvent e) {
-					Window.this.mouseEntered(e);
+					inputQueue.add(() -> {
+						Window.this.mouseEntered(e);
+					});
 				}
 	
 				@Override
 				public void mouseExited(MouseEvent e) {
-					Window.this.mouseExited(e);
+					inputQueue.add(() -> {
+						Window.this.mouseExited(e);
+					});
 				}
 				
 			});
 			frame.addMouseMotionListener(new MouseMotionListener() {
 				@Override
 				public void mouseDragged(MouseEvent e) {
-					Window.this.mouseMoved(e, true);
+					inputQueue.add(() -> {
+						Window.this.mouseMoved(e, true);
+					});
 				}
 	
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					Window.this.mouseMoved(e, false);
-					if(targetButton == null) {
-						for(GUIButtonObject button : buttons) {
-							if(button.contains(e.getX(), e.getY())) {
-								targetButton = button;
-								button.setHovered(true);
-								button.mouseEntered(e);
-								return;
+					inputQueue.add(() -> {
+
+						Window.this.mouseMoved(e, false);
+						if(targetButton == null) {
+							for(GUIButtonObject button : buttons) {
+								if(button.contains(e.getX(), e.getY())) {
+									targetButton = button;
+									button.setHovered(true);
+									button.mouseEntered(e);
+									return;
+								}
 							}
+						}else if(!targetButton.contains(e.getX(), e.getY())) {
+							targetButton.setHovered(false);
+							targetButton.setPressed(false);
+							targetButton.mouseExited(e);
+							targetButton = null;
 						}
-					}else if(!targetButton.contains(e.getX(), e.getY())) {
-						targetButton.setHovered(false);
-						targetButton.setPressed(false);
-						targetButton.mouseExited(e);
-						targetButton = null;
-					}
+					});
 				}
 				
 			});
@@ -233,22 +254,28 @@ public class Window extends BaseGUIObject implements WindowListener {
 	
 				@Override
 				public void keyPressed(KeyEvent e) {
-					Window.this.keyPressed(e);
+					inputQueue.add(() -> {
+						Window.this.keyPressed(e);
+					});
 				}
 	
 				@Override
 				public void keyReleased(KeyEvent e) {
-					Window.this.keyReleased(e);
+					inputQueue.add(() -> {
+						Window.this.keyReleased(e);
+					});
 				}
 				
 			});
 			
 			frame.addComponentListener(new ComponentAdapter() {
 			    public void componentResized(ComponentEvent componentEvent) {
-			    	width = frame.getWidth();
-					height = frame.getHeight();
-					children.updateSizes();
-			    	windowResized(width, height);
+					inputQueue.add(() -> {
+				    	width = frame.getWidth();
+						height = frame.getHeight();
+						children.updateSizes();
+				    	windowResized(width, height);
+					});
 			    }
 			});
 			
@@ -327,17 +354,25 @@ public class Window extends BaseGUIObject implements WindowListener {
 	
 	
 	protected void updateButtons() {
+		targetButton = null;
 		buttons = new ArrayList<GUIButtonObject>();
 		collectButtons(children);
-		buttons.sort(Comparator.comparingInt(GUIObject::getDisplayOrder).reversed());
+		buttons.sort(Comparator.comparingInt(GUIButtonObject::getDisplayOrder).reversed());
 	}
 	
 	private void collectButtons(GUIChildren guiChildren) {
 		for(GUIObject child : guiChildren.list) {
+			System.out.println(child.getName());
 			if(child instanceof GUIButtonObject) {
 				buttons.add((GUIButtonObject)child);				
 			}
 			collectButtons(child.getChildren());
+		}
+	}
+	
+	public void pollInput() {
+		while(!inputQueue.isEmpty()) {
+			inputQueue.poll().run();
 		}
 	}
 }

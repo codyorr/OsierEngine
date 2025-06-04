@@ -1,5 +1,5 @@
 package org.osier.listeners;
 
-public interface Callback<T> {
-	public void run(T obj);
+public interface Callback {
+	public void run();
 }

@@ -25,7 +25,7 @@ public class ImageLabel extends GUIObject {
 	
 	@Override
 	protected void render(Graphics2D g) {
-		if(!visible)return;
+		if(!visible || parent==null)return;
 		
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
 

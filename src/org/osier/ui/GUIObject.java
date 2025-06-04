@@ -48,7 +48,7 @@ public class GUIObject extends BaseGUIObject {
 
 	
 	protected void render(Graphics2D g) {
-		if(!visible)return;
+		if(!visible || parent==null)return;
 		//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
         
@@ -125,6 +125,23 @@ public class GUIObject extends BaseGUIObject {
 		}
 		if(parent!=null) {
 			parent.children.remove(this);
+			if(obj == null) {
+				BaseGUIObject p = parent;
+				while(true) {
+					if(p instanceof Window) {
+						Window window = (Window) p;
+						window.updateButtons();
+						break;
+					}else if(p instanceof BlockingDialog) {
+						BlockingDialog dialog = (BlockingDialog) p;
+						dialog.updateButtons();
+						break;
+					}else {
+						GUIObject guiObject = (GUIObject)p;
+						p = guiObject.parent;
+					}
+				}
+			}
 			parent = null;
 		}
 		if(obj!=null) {

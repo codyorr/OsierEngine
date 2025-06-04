@@ -4,7 +4,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.osier.listeners.CoreListener;
 import org.osier.ui.Window;
@@ -18,7 +17,6 @@ public class OsierEngine implements CoreListener {
 	public Window window;
 	private Thread renderThread;
 	private GraphicsDevice display;
-	private ConcurrentLinkedQueue<Runnable> inputQueue;
 
 	private int displayWidth;
 	private int displayHeight;
@@ -28,14 +26,11 @@ public class OsierEngine implements CoreListener {
 	private float frameTime;
 	private boolean shouldRender;
 	private boolean vsyncEnabled;
-	private boolean windowResizing;
-	//private boolean mouseMoving;
 	private boolean running;
 	private final long SECOND_NANOS = 1000000000L;
 
 	
 	public OsierEngine(String title, int width, int height, boolean decorated) {
-		this.inputQueue = new ConcurrentLinkedQueue<Runnable>();
 		this.display = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 		this.displayWidth = display.getDisplayMode().getWidth();
 		this.displayHeight = display.getDisplayMode().getHeight();
@@ -55,57 +50,32 @@ public class OsierEngine implements CoreListener {
          		int refreshRate;
 
         		window = new Window(title, width, height, decorated) {
-        			public void mouseClicked(MouseEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.mouseClicked(e, false);
-        				});
+        			public void mouseClicked(MouseEvent e, boolean processed) {
+    					OsierEngine.this.mouseClicked(e, processed);
         			}
-        			public void mousePressed(MouseEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.mousePressed(e, false);
-        				});
+        			public void mousePressed(MouseEvent e, boolean processed) {
+    					OsierEngine.this.mousePressed(e, false);
         			}
-        			public void mouseReleased(MouseEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.mouseReleased(e, false);
-        				});
+        			public void mouseReleased(MouseEvent e, boolean processed) {
+    					OsierEngine.this.mouseReleased(e, false);
         			}
         			public void mouseEntered(MouseEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.mouseEntered(e);
-        				});
+    					OsierEngine.this.mouseEntered(e);
         			}
         			public void mouseExited(MouseEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.mouseExited(e);
-        				});
+    					OsierEngine.this.mouseExited(e);
         			}
         			public void mouseMoved(MouseEvent e, boolean isDragging) {
-        				//if(mouseMoving) return;
-        				//mouseMoving=true;
-        				inputQueue.add(() -> {
-        					//mouseMoving = false;
-        					OsierEngine.this.mouseMoved(e, isDragging);
-        				});
+    					OsierEngine.this.mouseMoved(e, isDragging);
         			}
         			public void keyPressed(KeyEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.keyPressed(e, false);
-        				});
+    					OsierEngine.this.keyPressed(e, false);
         			}
         			public void keyReleased(KeyEvent e) {
-        				inputQueue.add(() -> {
-        					OsierEngine.this.keyReleased(e, false);
-        				});
+    					OsierEngine.this.keyReleased(e, false);
         			}
         			public void windowResized(int width, int height) {
-        				if(windowResizing) return;
-            			windowResizing=true;
-
-        		    	inputQueue.add(() -> {
-        		    		windowResizing=false;
-        	    		    OsierEngine.this.windowResized(window.getWidth(),window.getHeight());
-        		    	});
+    	    		    OsierEngine.this.windowResized(window.getWidth(),window.getHeight());
         			}
         			public void windowClosing() {
         				OsierEngine.this.stop();
@@ -132,9 +102,7 @@ public class OsierEngine implements CoreListener {
          			}
          			
          			//handle input
-         			while(!inputQueue.isEmpty()) {
-         				inputQueue.poll().run();
-         			}
+         			window.pollInput();
          			
          			//handle frame rate         			
          			while(unprocessedTime > frameTime) {

@@ -50,7 +50,7 @@ public class TextLabel extends GUIObject {
 
     @Override
     public void render(Graphics2D g) {
-    	if(!visible) return;
+		if(!visible || parent==null)return;
     	//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
         

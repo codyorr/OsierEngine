@@ -23,14 +23,15 @@ public class Test extends OsierEngine{
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("CLICK");
 				frame.setText("CLICKED");
+				frame.setParent(null);
 			}
 			public void mousePressed(MouseEvent e) {
 				System.out.println("PRESS");
 				frame.setText("PRESSED");
-
 			}
 			public void mouseReleased(MouseEvent e) {
 				System.out.println("RELEASED");
+				frame.setText("RELEASED");
 			}
 			public void mouseEntered(MouseEvent e) {
 				System.out.println("ENTERED");
@@ -61,6 +62,6 @@ public class Test extends OsierEngine{
 	
 	@Override
 	public void mouseClicked(MouseEvent e, boolean processed) {
-		System.out.println("CLICK");
+		
 	}
 }
