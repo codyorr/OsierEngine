@@ -2,11 +2,8 @@ package com.cody;
 
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 import org.osier.OsierEngine;
-import org.osier.ui.GUIFrame;
-import org.osier.ui.ImageButton;
 import org.osier.ui.TextButton;
 
 public class Test extends OsierEngine{
