@@ -22,9 +22,14 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 	
 	@Override
 	protected void render(Graphics2D g) {
-		if(!visible || parent==null)return;
+		if(!visible)return;
 		//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
+        
+
+        if(clipDescendants) {
+        	g.setClip(clipShape);
+        }
 
 		g.setColor(pressed ? pressedBackgroundColor : (hovered ? hoveredBackgroundColor : backgroundColor));
 		if(cornerRadius<1) {
@@ -44,6 +49,8 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
         g.rotate(-rotationAngle, x + width / 2, y + height / 2);
 
 		children.render(g);
+		
+		g.setClip(null);
 	}	
 	
 	public void setHovered(boolean hovered) {

@@ -48,7 +48,7 @@ public class GUIObject extends BaseGUIObject {
 
 	
 	protected void render(Graphics2D g) {
-		if(!visible || parent==null)return;
+		if(!visible)return;
 		//g.translate(-g.getTransform().getTranslateX(), -g.getTransform().getTranslateY());
         g.rotate(rotationAngle, x + width / 2, y + height / 2);
         
