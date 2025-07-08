@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import org.osier.OsierEngine;
-import org.osier.ui.GUIFrame;
 import org.osier.ui.TextButton;
 
 public class Test extends OsierEngine{
@@ -45,7 +44,7 @@ public class Test extends OsierEngine{
 		frame.setOrigin(0.5f, 0.5f);
 		frame.setCornerRadius(8);
 		frame.setTextScaled(true);
-		frame.setParent(new GUIFrame());
+		frame.setParent(window);
 	}
 
 	@Override

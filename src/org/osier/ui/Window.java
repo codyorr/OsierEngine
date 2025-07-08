@@ -219,6 +219,21 @@ public class Window extends BaseGUIObject implements WindowListener {
 				public void mouseDragged(MouseEvent e) {
 					inputQueue.add(() -> {
 						Window.this.mouseMoved(e, true);
+						if(targetButton == null) {
+							for(GUIButtonObject button : buttons) {
+								if(button.contains(e.getX(), e.getY())) {
+									targetButton = button;
+									button.setHovered(true);
+									button.mouseEntered(e);
+									return;
+								}
+							}
+						}else if(!targetButton.contains(e.getX(), e.getY())) {
+							targetButton.setHovered(false);
+							targetButton.setPressed(false);
+							targetButton.mouseExited(e);
+							targetButton = null;
+						}
 					});
 				}
 	
