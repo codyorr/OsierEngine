@@ -1,59 +1,36 @@
 package org.osier.ui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 
-import org.osier.math.ScaledDimension;
+import java.awt.Graphics2D;
+
 
 public class ScrollGrid extends GUIObject {
 	
 
-	private BufferedImage canvas;
+	private ScrollCanvas canvas;
 	private ScrollBar horizontalBar;
 	private ScrollBar verticalBar;
-	private float canvasScaleX,canvasScaleY;
-	private int canvasWidth,canvasHeight, canvasPaddingX,canvasPaddingY;
-	private float cellScaleX, cellScaleY;
-	private int cellWidth,cellHeight, cellPaddingX, cellPaddingY;
+	private float canvasPaddingScaleX, canvasPaddingScaleY;
+	private int canvasPaddingOffsetX, canvasPaddingOffsetY;
 	private int gridWidth, gridHeight;
 	private boolean gridEnabled;
 	
 	public ScrollGrid() {
 		name = "ScrollGrid";
-		backgroundColor = Color.white;
-		borderColor = Color.black;
-		width = 75;
-		height = 50;
-		sizeOffsetX = 75;
-		sizeOffsetY = 50;
-		borderSize = 1;
-		borderStroke = new BasicStroke(borderSize);
-		borderX = x - (borderSize/2);
-		borderY = y - (borderSize/2);
-		borderWidth = width +  borderSize/2;
-		borderHeight = height + borderSize/2;
-		clipShape = new Rectangle(x,y,width,height);
 		
-		canvasScaleX = 1;
-		canvasScaleY = 2;
-		canvasWidth = 75;
-		canvasHeight = 100;
-		canvasPaddingX = 0;
-		canvasPaddingY = 0;
-		canvas = new BufferedImage(canvasWidth,canvasHeight, BufferedImage.TYPE_INT_ARGB);
+		canvas = new ScrollCanvas();
+		canvas.setParent(this);
+		canvas.setSize(0, 1, 0, 2);
+		canvas.setPosition(0, 0, 0, 0);
 		
 		verticalBar = new ScrollBar();
 		verticalBar.setParent(this);
 		
 		horizontalBar = new ScrollBar();
-		horizontalBar.setParent(this);
-		
-		visible =  true;
+		horizontalBar.setParent(this);		
 	}
 	
+	@Override
 	protected void render(Graphics2D g) {
 		if(!visible)return;
        // g.rotate(rotationAngle, x + width / 2, y + height / 2);
@@ -75,9 +52,12 @@ public class ScrollGrid extends GUIObject {
 			g.drawRoundRect(borderX, borderY, borderWidth, borderHeight, cornerRadius, cornerRadius);
 		}
 		
-		g.drawImage(canvas, canvasPaddingX, canvasPaddingY, canvasWidth,canvasHeight, null);
-				
-		verticalBar.render(g);
+		canvas.render(g);
+			
+		if(verticalBar!=null) 
+			verticalBar.render(g);
+		if(horizontalBar!=null)
+			horizontalBar.render(g);
         //g.rotate(-rotationAngle, x + width / 2, y + height / 2);
         
 		//children.render(g);
@@ -85,25 +65,33 @@ public class ScrollGrid extends GUIObject {
 		g.setClip(null);
 	}
 	
+	
 	@Override
-	public void setSize(int ox, float sx, int oy, float sy) {
-		super.setSize(ox, sx, oy, sy);
-		canvasWidth = (int)(width*canvasScaleX);
-		canvasHeight = (int)(height*canvasScaleY);
+	protected void add(GUIObject obj) {
+		canvas.children.add(obj);
+		obj.parent = this;
 	}
 	
-	public void setCanvasSize(float sx, float sy) {
-		canvasScaleX=x;
-		canvasScaleY=y;
-		canvasWidth = (int)(width*canvasScaleX)-canvasPaddingX;
-		canvasHeight = (int)(height*canvasScaleY)-canvasPaddingY;
+	@Override
+	protected void remove(GUIObject obj) {
+		canvas.children.remove(obj);
+		obj.parent = null;
 	}
 	
-	public void setCanvasPadding(int px, int py) {
-		canvasPaddingX = px;
-		canvasPaddingY = py;
-		canvasWidth = (int)(width*canvasScaleX) - px;
-		canvasHeight = (int)(height*canvasScaleY) - py;
+	public void setCanvasSize(int ox, float sx, int oy, float sy) {
+		setCanvasPadding(canvasPaddingOffsetX, canvasPaddingScaleX, canvasPaddingOffsetY, canvasPaddingScaleY);
+	}
+	
+	public void setCanvasPadding(int ox, float sx, int oy, float sy) {
+		canvasPaddingOffsetX = ox;
+		canvasPaddingOffsetY = oy;
+		canvasPaddingScaleX = sx;
+		canvasPaddingScaleY = sy;
+		
+		canvas.width = (int)(width*canvas.sizeScaleX)+canvas.sizeOffsetX-((int)(width*sx))-ox;
+		canvas.height = (int)(width*canvas.sizeScaleY)+canvas.sizeOffsetY-((int)(height*sy))-oy;
+		canvas.x = (int)(width*canvas.posScaleX)+canvas.posOffsetX+((int)(width*sx))+ox;
+		canvas.y = (int)(height*canvas.posScaleY)+canvas.posOffsetY+((int)(height*sy))+oy;
 	}
 	
 	
@@ -121,35 +109,6 @@ public class ScrollGrid extends GUIObject {
 	}
 	
 	public void setCellSize(int ox, float sx, int oy, float sy) {
-		cellScaleX = sx;
-		cellScaleY = sy;
-		cellWidth = (int)(canvasWidth*sx)+ox;
-		cellHeight = (int)(canvasHeight*sy)+oy;
+		
 	}
-	
-	private void updateCanvas() {
-		//TODO decide whether or not to change image size or just scale it in the drawImage method
-		//canvas = new BufferedImage(canvasWidth,canvasHeight, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = (Graphics2D) canvas.getGraphics();
-		
-		
-		if(gridEnabled) {
-			int childIndex = 0;
-			int childCount = children.list.size();
-			for(int y = 0; y < gridHeight; y++) {
-				for(int x = 0; x < gridWidth; x++) {
-					if(childIndex < childCount) {
-						children.get(childIndex).render(g);
-					}
-				}
-			}
-		} 
-		else {
-			
-		}
-		
-		g.dispose();
-	}
-		
-
 }

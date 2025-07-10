@@ -15,6 +15,16 @@ public class BaseGUIObject {
 		children = new GUIChildren();
 	}
 	
+	protected void add(GUIObject obj) {
+		children.add(obj);
+		obj.parent = this;
+	}
+	
+	protected void remove(GUIObject obj) {
+		children.remove(obj);
+		obj.parent = null;
+	}
+	
 	public String getName() {
 		return name;
 	}

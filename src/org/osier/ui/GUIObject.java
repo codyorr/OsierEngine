@@ -124,36 +124,10 @@ public class GUIObject extends BaseGUIObject {
 			return;
 		}
 		if(parent!=null) {
-			parent.children.remove(this);
-			if(obj == null) {
-				BaseGUIObject p = parent;
-				while(true) {
-					if(p instanceof Window) {
-						Window window = (Window) p;
-						window.updateButtons();
-						break;
-					}else if(p instanceof BlockingDialog) {
-						BlockingDialog dialog = (BlockingDialog) p;
-						dialog.updateButtons();
-						break;
-					}else {
-						GUIObject guiObject = (GUIObject)p;
-						p = guiObject.parent;
-					}
-				}
-			}
-			parent = null;
+			parent.remove(this);
 		}
 		if(obj!=null) {
-			obj.children.add(this);
-			if(obj instanceof Window) {
-				Window window = (Window) obj;
-				window.updateButtons();
-			}else if(obj instanceof BlockingDialog) {
-				BlockingDialog dialog = (BlockingDialog) obj;
-				dialog.updateButtons();
-			}
-			parent = obj;
+			obj.add(this);
 			setSize(sizeOffsetX, sizeScaleX, sizeOffsetY, sizeScaleY);
 		}
 	}

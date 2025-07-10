@@ -87,6 +87,19 @@ public class Window extends BaseGUIObject implements WindowListener {
 	}
 	
 	
+	@Override
+	public void add(GUIObject obj) {
+		super.add(obj);
+		updateButtons();
+	}
+	
+	@Override
+	public void remove(GUIObject obj) {
+		super.remove(obj);
+		updateButtons();
+	}
+	
+	
 	public void attachBlockingDialog(BlockingDialog dialog) {
 		blockingDialog = dialog;
 		dialog.enable(this);

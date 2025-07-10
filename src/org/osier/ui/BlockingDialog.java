@@ -75,6 +75,18 @@ public class BlockingDialog extends BaseGUIObject implements WindowListener {
 	    g.dispose();
 	}
 	
+	@Override
+	public void add(GUIObject obj) {
+		super.add(obj);
+		updateButtons();
+	}
+	
+	@Override
+	public void remove(GUIObject obj) {
+		super.remove(obj);
+		updateButtons();
+	}
+	
 	public String getTitle() {
 		return title;
 	}
