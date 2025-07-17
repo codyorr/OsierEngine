@@ -3,6 +3,8 @@ package org.osier.ui;
 
 import java.awt.Graphics2D;
 
+import org.osier.math.Vector2;
+
 
 public class ScrollGrid extends GUIObject {
 	
@@ -10,9 +12,9 @@ public class ScrollGrid extends GUIObject {
 	private ScrollCanvas canvas;
 	private ScrollBar horizontalBar;
 	private ScrollBar verticalBar;
-	private float canvasPaddingScaleX, canvasPaddingScaleY;
-	private int canvasPaddingOffsetX, canvasPaddingOffsetY;
-	private int gridWidth, gridHeight;
+	private float canvasPaddingScaleX, canvasPaddingScaleY, cellPaddingScaleX, cellPaddingScaleY, cellSizeScaleX, cellSizeScaleY;
+	private int canvasPaddingOffsetX, canvasPaddingOffsetY, cellPaddingOffsetX, cellPaddingOffsetY, cellSizeOffsetX, cellSizeOffsetY;
+	private int cellDeltaX, cellDeltaY, cellWidth, cellHeight, gridWidth, gridHeight;
 	private boolean gridEnabled;
 	
 	public ScrollGrid() {
@@ -78,29 +80,12 @@ public class ScrollGrid extends GUIObject {
 		obj.parent = null;
 	}
 	
-	public void setCanvasSize(int ox, float sx, int oy, float sy) {
-		setCanvasPadding(canvasPaddingOffsetX, canvasPaddingScaleX, canvasPaddingOffsetY, canvasPaddingScaleY);
+	public boolean isGridEnabled() {
+		return gridEnabled;
 	}
-	
-	public void setCanvasPadding(int ox, float sx, int oy, float sy) {
-		canvasPaddingOffsetX = ox;
-		canvasPaddingOffsetY = oy;
-		canvasPaddingScaleX = sx;
-		canvasPaddingScaleY = sy;
-		
-		canvas.width = (int)(width*canvas.sizeScaleX)+canvas.sizeOffsetX-((int)(width*sx))-ox;
-		canvas.height = (int)(width*canvas.sizeScaleY)+canvas.sizeOffsetY-((int)(height*sy))-oy;
-		canvas.x = (int)(width*canvas.posScaleX)+canvas.posOffsetX+((int)(width*sx))+ox;
-		canvas.y = (int)(height*canvas.posScaleY)+canvas.posOffsetY+((int)(height*sy))+oy;
-	}
-	
 	
 	public void enableGrid(boolean enabled) {
 		gridEnabled = enabled;
-	}
-	
-	public boolean isGridEnabled() {
-		return gridEnabled;
 	}
 	
 	public void setGridSize(int width, int height) {
@@ -108,7 +93,9 @@ public class ScrollGrid extends GUIObject {
 		gridHeight = height;
 	}
 	
-	public void setCellSize(int ox, float sx, int oy, float sy) {
-		
+	public Vector2 getGridSize() {
+		return new Vector2(gridWidth, gridHeight);
 	}
+	
+	
 }
