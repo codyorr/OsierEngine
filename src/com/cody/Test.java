@@ -12,6 +12,10 @@ public class Test extends OsierEngine{
 		super(title, width, height, decorated);
 	}
 	
+	
+	//TODO make sure window listeners are disconnect when window is set to invisible
+	//TODO redo Scrollbar class and then handle input in the Window and BlockingDialog classes
+	
 	private TextButton frame;
 	@Override
 	public void load() {

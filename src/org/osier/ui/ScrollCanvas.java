@@ -3,6 +3,8 @@ package org.osier.ui;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 public class ScrollCanvas extends GUIObject {
@@ -51,13 +53,70 @@ public class ScrollCanvas extends GUIObject {
 	}
 	
 	
-	protected void updateChildGraphics() {
+	public void setPosition(int offsetX, float scaleX, int offsetY, float scaleY, boolean scaleChildren) {
+		posOffsetX = offsetX;
+		posOffsetY = offsetY;
+		posScaleX = scaleX;
+		posScaleY = scaleY;
+		
+		if(parent==null)return;
+
+		x = parent.x + (int)Math.round((parent.width*scaleX) - (originX*width)) + offsetX;
+		y = parent.y + (int)Math.round((parent.height*scaleY) - (originY*height)) + offsetY;
+		if(cornerRadius > 0) {
+			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
+		}else {
+			clipShape = new Rectangle(x,y,width,height);
+		}
+		//setBorderSize(borderSize);
+		if(scaleChildren) {
+			children.updatePositions();
+		}
+	}
+	
+	public void setSize(int offsetX, float scaleX, int offsetY, float scaleY, boolean scaleChildren) {
+		sizeOffsetX = offsetX;
+		sizeOffsetY = offsetY;
+		sizeScaleX = scaleX;
+		sizeScaleY = scaleY;
+		if(parent==null)return;
+		width = (int)Math.round(parent.width * scaleX) + offsetX;
+		height = (int)Math.round(parent.height * scaleY) + offsetY;
+		if(scaleChildren) {
+			children.updateSizes();
+		}
+		
+		posOffsetX = offsetX;
+		posOffsetY = offsetY;
+		posScaleX = scaleX;
+		posScaleY = scaleY;
+		x = parent.x + (int)Math.round((parent.width*scaleX) - (originX*width)) + offsetX;
+		y = parent.y + (int)Math.round((parent.height*scaleY) - (originY*height)) + offsetY;
+		if(cornerRadius > 0) {
+			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
+		}else {
+			clipShape = new Rectangle(x,y,width,height);
+		}
+		//setBorderSize(borderSize);
+		if(scaleChildren) {
+			children.updatePositions();
+		}
+		
+	}
+	
+	
+	protected void update() {
 		Graphics2D g = (Graphics2D) image.createGraphics();
 		g.clearRect(0, 0, width, height);
 		for(int i = 0; i < children.list.size(); i++) {
 			children.get(i).render(g);
 		}
 		g.dispose();
+	}
+	
+	protected void offsetCanvas(int x, int y) {
+		this.x+=x;
+		this.y+=y;
 	}
 	
 	protected Graphics2D createGraphics() {

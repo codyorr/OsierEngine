@@ -102,14 +102,25 @@ public class GUIObject extends BaseGUIObject {
 		sizeOffsetY = offsetY;
 		sizeScaleX = scaleX;
 		sizeScaleY = scaleY;
-		
 		if(parent==null)return;
-		
 		width = (int)Math.round(parent.width * scaleX) + offsetX;
 		height = (int)Math.round(parent.height * scaleY) + offsetY;
-		setBorderSize(borderSize);
 		children.updateSizes();
-		updatePosition();		
+		
+		posOffsetX = offsetX;
+		posOffsetY = offsetY;
+		posScaleX = scaleX;
+		posScaleY = scaleY;
+		x = parent.x + (int)Math.round((parent.width*scaleX) - (originX*width)) + offsetX;
+		y = parent.y + (int)Math.round((parent.height*scaleY) - (originY*height)) + offsetY;
+		if(cornerRadius > 0) {
+			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
+		}else {
+			clipShape = new Rectangle(x,y,width,height);
+		}
+		setBorderSize(borderSize);
+		children.updatePositions();	
+
 	}
 	
 	public void setOrigin(float scaleX, float scaleY) {
