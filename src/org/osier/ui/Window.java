@@ -1,11 +1,14 @@
 package org.osier.ui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -16,6 +19,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +33,7 @@ import org.osier.listeners.Callback;
 import org.osier.listeners.WindowListener;
 
 
-public class Window extends BaseGUIObject implements WindowListener {	
+public abstract class Window extends BaseGUIObject implements WindowListener {	
 	
 	private Frame frame;
 	private Graphics2D g;
@@ -63,6 +67,8 @@ public class Window extends BaseGUIObject implements WindowListener {
 		this.inputQueue = new ConcurrentLinkedQueue<Callback>();
 	}
 	
+	public abstract void draw(Graphics2D g);
+	
 	public void render() {
 		if(disabled || !frame.isVisible())return;
 		
@@ -79,6 +85,7 @@ public class Window extends BaseGUIObject implements WindowListener {
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		//g.translate(window.getInsets().left, window.getInsets().top);
 		children.render(g);
+		draw(g);
 	    bs.show();
 	    if(blocked) {
 	    	blockingDialog.render();
@@ -112,6 +119,14 @@ public class Window extends BaseGUIObject implements WindowListener {
 	public void setTitle(String title) {
 		if(disabled)return;
 		frame.setTitle(title);
+	}
+	
+	public void setCursor(Image image) {
+		if(image == null) {
+			image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		}
+	    Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(0, 0), "Cursor");
+	    frame.setCursor(cursor);
 	}
 	
 	public void setIconImage(String path) {

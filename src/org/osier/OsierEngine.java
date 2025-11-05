@@ -1,5 +1,6 @@
 package org.osier;
 
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
@@ -79,6 +80,9 @@ public class OsierEngine implements CoreListener {
         			}
         			public void windowClosing() {
         				OsierEngine.this.stop();
+        			}
+        			public void draw(Graphics2D g) {
+        				OsierEngine.this.render(g);
         			}
         		};
         		window.enable();

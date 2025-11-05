@@ -107,12 +107,9 @@ public class GUIObject extends BaseGUIObject {
 		height = (int)Math.round(parent.height * scaleY) + offsetY;
 		children.updateSizes();
 		
-		posOffsetX = offsetX;
-		posOffsetY = offsetY;
-		posScaleX = scaleX;
-		posScaleY = scaleY;
-		x = parent.x + (int)Math.round((parent.width*scaleX) - (originX*width)) + offsetX;
-		y = parent.y + (int)Math.round((parent.height*scaleY) - (originY*height)) + offsetY;
+		
+		x = parent.x + (int)Math.round((parent.width*posScaleX) - (originX*width)) + posOffsetX;
+		y = parent.y + (int)Math.round((parent.height*posScaleY) - (originY*height)) + posOffsetY;
 		if(cornerRadius > 0) {
 			clipShape = new RoundRectangle2D.Double(x,y,width,height,cornerRadius,cornerRadius);
 		}else {

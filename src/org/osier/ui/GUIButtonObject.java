@@ -86,7 +86,6 @@ public class GUIButtonObject extends GUIObject implements GUIButtonListener {
 		if(tx >= x && ty >= y && tx <= x+width && ty <= y+height) {
 			return true;
 		}
-		
 		return false;
 	}
 

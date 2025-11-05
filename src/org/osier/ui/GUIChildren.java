@@ -7,7 +7,7 @@ import java.util.List;
 
 public class GUIChildren {
 	
-	protected List<GUIObject> list;
+	public List<GUIObject> list; //CHANGE TO PROTECTED!!!!
 	
 	public GUIChildren() {
 		list = new ArrayList<GUIObject>();
