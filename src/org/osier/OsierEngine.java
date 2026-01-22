@@ -3,11 +3,21 @@ package org.osier;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import org.osier.listeners.CoreListener;
 import org.osier.ui.Window;
+import org.osier.util.Logger;
 
 public class OsierEngine implements CoreListener {
 	
@@ -122,7 +132,7 @@ public class OsierEngine implements CoreListener {
          			
          			//handle update/render
          			if(shouldRender) {
-         				update();
+         				update((float) frameTime);
          				window.render();
          				frames++;
          			}
@@ -198,6 +208,27 @@ public class OsierEngine implements CoreListener {
 	
 	public int getFPS() {
 		return fps;
+	}
+	
+	public BufferedImage loadImage(String path) {
+		try {
+			return ImageIO.read(new File(path));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public BufferedImage loadImageFromURL(String urlString) {
+	    try {
+	        URI uri = new URI(urlString);
+	        URL url = uri.toURL();
+	       return ImageIO.read(url);
+	    } catch (URISyntaxException | IOException e) {
+	        Logger.log("Failed to load image from URL: " + urlString);
+	    }
+	    
+	    return null;
 	}
 		
 	

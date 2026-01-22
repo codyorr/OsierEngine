@@ -7,7 +7,7 @@ import java.awt.event.MouseEvent;
 public interface CoreListener {
 	//setup defaults (as to not force users to implement all methods at once)
 	default public void load() {}
-	default public void update() {}
+	default public void update(float deltaTime) {}
 	default public void render(Graphics2D g) {}
 	default public void mouseClicked(MouseEvent e, boolean processed) {}
 	default public void mousePressed(MouseEvent e, boolean processed) {}
