@@ -84,8 +84,8 @@ public abstract class Window extends BaseGUIObject implements WindowListener {
 		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		//g.translate(window.getInsets().left, window.getInsets().top);
-		children.render(g);
 		draw(g);
+		children.render(g);
 	    bs.show();
 	    if(blocked) {
 	    	blockingDialog.render();
